@@ -185,6 +185,58 @@
         "idempotentHint": false,
         "openWorldHint": false
       }
+    },
+    {
+      "name": "subscribe_reports",
+      "display_name": "订阅趋势报告",
+      "description": "订阅月瑀科技发布的行业趋势报告和学习资料。新内容发布时，会通过用户选择的渠道（邮件/微信/Webhook）推送通知。用户说「我想订阅」、「有新报告通知我」、「关注趋势」时使用。",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "channel": {
+            "type": "string",
+            "enum": ["email", "wechat", "webhook"],
+            "description": "订阅渠道：email=邮件推送, wechat=微信推送, webhook=webhook回调"
+          },
+          "address": {
+            "type": "string",
+            "description": "订阅地址：邮箱地址 / 微信号 / webhook URL"
+          },
+          "interests": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "感兴趣的话题标签（可选），如 ['整合营销', '达人种草', 'AI创意']"
+          }
+        },
+        "required": ["channel", "address"]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
+    },
+    {
+      "name": "unsubscribe_reports",
+      "display_name": "取消订阅报告",
+      "description": "取消订阅月瑀科技的趋势报告推送。用户说「取消订阅」、「不要推了」时使用。",
+      "inputSchema": {
+        "type": "object",
+        "properties": {
+          "address": {
+            "type": "string",
+            "description": "订阅时使用的地址"
+          }
+        },
+        "required": ["address"]
+      },
+      "annotations": {
+        "readOnlyHint": false,
+        "destructiveHint": false,
+        "idempotentHint": true,
+        "openWorldHint": false
+      }
     }
   ],
   "brand_prompt": {
