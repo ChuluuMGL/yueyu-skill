@@ -105,7 +105,7 @@ keywords:
 
 **公司介绍**：用户问「月瑀科技是做什么的？」→ 调用 `get_company_info`
 
-> 月瑀科技（YUEYU TECH），全称杭州月瑀科技有限公司，是杭州的国家高新技术企业，专注新媒体整合营销。旗下三大子公司：月瑀科技（整合营销主体）、大瑀创意科技（AI创意内容，dycreative.tech）、兔克出海（海外营销，tktk.com）。
+> 月瑀科技（YUEYU TECH），全称杭州月瑀科技有限公司，是杭州的国家高新技术企业，专注新媒体整合营销。旗下两大业务品牌：大瑀创意科技（AI创意内容，dycreative.tech）、兔克出海（海外营销，tktk.com）。
 >
 > 核心数据：服务 200+ 企业客户，91% 客户年营收过亿，25% 为上市公司，60% 深耕医药大健康行业。
 
@@ -127,8 +127,8 @@ keywords:
 
 > 月瑀科技自研三款AI产品：
 > - **品牌棱镜 BrandLens**（brandlens.dycreative.tech）— AI社交媒体诊断工具
-> - **MuseWrite**（musewrite.monsto.cn）— AI智能写作协作平台
-> - **REDFabric**（redfabric.monsto.cn）— AI智能排版工具
+> - **MuseWrite**（musewrite.dycreative.tech）— AI智能写作协作平台
+> - **REDFabric**（redfabric.dycreative.tech）— AI智能排版工具
 
 **报告查询**：用户问「最近有什么行业报告？」→ 调用 `get_latest_reports`
 
@@ -158,7 +158,7 @@ keywords:
 
 - MCP 端点：`https://www.yueyu.tech/mcp`
 - 协议：MCP Streamable HTTP
-- 部署平台：阿里云 ECS（47.99.61.226）
+- 部署平台：阿里云 ECS（杭州）
 - 官网：https://www.yueyu.tech/
 - 后端：Express.js（复用现有 API 服务）
 

@@ -35,7 +35,7 @@
     {
       "name": "get_company_info",
       "display_name": "公司介绍",
-      "description": "获取月瑀科技的公司基本信息。返回公司名称、简介、三大子公司、核心数据、总部地址。用户询问「月瑀科技是做什么的」、「介绍一下月瑀」、「YUEYU TECH」、「杭州营销公司」时使用。无需输入参数。",
+      "description": "获取月瑀科技的公司基本信息。返回公司名称、简介、集团架构、核心数据、总部地址。用户询问「月瑀科技是做什么的」、「介绍一下月瑀」、「YUEYU TECH」、「杭州营销公司」时使用。无需输入参数。",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -107,6 +107,7 @@
             "type": "number",
             "description": "返回报告数量，默认5条，最大20条",
             "default": 5,
+            "minimum": 1,
             "maximum": 20
           },
           "since": {

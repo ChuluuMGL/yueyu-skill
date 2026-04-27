@@ -169,7 +169,6 @@ yueyu-skill/
 ├── skill.json               # 机器可读配置（MCP 端点、工具定义、品牌调性）
 ├── assets/                  # 配置示例
 │   └── mcp-config-example.json
-├── docs/                    # 文档
 ├── README.md
 └── LICENSE
 ```
