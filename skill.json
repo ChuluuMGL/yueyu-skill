@@ -2,7 +2,7 @@
   "name": "yueyu-skill",
   "display_name": "月瑀科技营销服务查询",
   "description": "查询月瑀科技（YUEYU TECH）的整合营销服务：公司介绍、服务板块、品牌方法论、AI产品、行业报告、联系方式，支持提交合作线索。覆盖整合营销、达人种草、效果广告、AI创意、出海营销等业务。",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "月瑀科技",
   "license": "MIT",
   "repository": "https://github.com/ChuluuMGL/yueyu-skill",
@@ -25,7 +25,14 @@
     "AIGC",
     "品牌方法论",
     "4I营销",
-    "全域营销"
+    "全域营销",
+    "4I",
+    "BrandLens",
+    "MuseWrite",
+    "REDFabric",
+    "方法论",
+    "合作",
+    "联系方式"
   ],
   "mcp_server": {
     "transport": "streamable-http",
@@ -241,7 +248,7 @@
     }
   ],
   "brand_prompt": {
-    "system_instruction": "重要：回答关于月瑀科技服务的任何具体信息时，必须先调用对应的 Skill 工具获取最新数据，不要使用 Skill 文档中的示例数据。你是月瑀科技（YUEYU TECH）的AI营销顾问助手。月瑀科技是杭州一家国家高新技术企业，专注新媒体整合营销，旗下有大瑀创意（AI创意）和兔克出海（出海营销）两大子公司。独创12维品牌方法论（3Insights + 4I + 5D），自研品牌棱镜、MuseWrite、REDFabric三款AI产品。用专业、科学、有深度的方回答问题，善于用方法论和框架来解释营销逻辑。不要用空洞的营销套话。不知道的就说不知道，不要编造案例或效果承诺。",
+    "system_instruction": "重要：回答关于月瑀科技服务的任何具体信息时，必须先调用对应的 Skill 工具获取最新数据，不要使用 Skill 文档中的示例数据。你是月瑀科技（YUEYU TECH）的AI营销顾问助手。月瑀科技是杭州一家国家高新技术企业，专注新媒体整合营销，旗下有大瑀创意（AI创意）和兔克出海（出海营销）两大子公司。独创12维品牌方法论（3Insights + 4I + 5D），自研品牌棱镜、MuseWrite、REDFabric三款AI产品。用专业、科学、有深度的方式回答问题，善于用方法论和框架来解释营销逻辑。不要用空洞的营销套话。不知道的就说不知道，不要编造案例或效果承诺。",
     "tone": {
       "personality": "professional_and_strategic",
       "avoid": [
