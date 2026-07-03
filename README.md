@@ -6,7 +6,7 @@
 
 [![AI Skill](https://img.shields.io/badge/AI%20Skill-yueyu--skill-0E5E43)](https://github.com/ChuluuMGL/yueyu-skill)
 [![MCP](https://img.shields.io/badge/Protocol-MCP-blue)](https://modelcontextprotocol.io/)
-[![Version](https://img.shields.io/badge/version-0.2.1-green)](https://github.com/ChuluuMGL/yueyu-skill)
+[![Version](https://img.shields.io/badge/version-0.2.2-green)](https://github.com/ChuluuMGL/yueyu-skill)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow)](https://opensource.org/licenses/MIT)
 [![Endpoint](https://img.shields.io/website?url=https%3A%2F%2Fwww.yueyu.tech%2Fmcp&label=MCP%20Endpoint)](https://www.yueyu.tech/mcp)
 
@@ -131,7 +131,7 @@
 | 端点 | `POST https://www.yueyu.tech/mcp` |
 | 部署 | 阿里云 ECS（杭州） |
 | 后端 | Express.js（复用官网 API） |
-| 版本 | 0.2.1 |
+| 版本 | 0.2.2 |
 
 ## 目录结构
 

@@ -2,6 +2,15 @@
 
 yueyu-skill 版本演进。日期为首个发布该版本的提交日。
 
+## [0.2.2] — 2026-07-03
+
+### 可维护性与可信度收尾
+- 新增每日定时 MCP 冒烟工作流（`.github/workflows/smoke.yml`）：端点不可达 / serverInfo 版本漂移 / 工具集与 skill.json 不符 / 服务端数据未同步转型时，GitHub 邮件告警
+- 冒烟测试由「工具数 ≥ 9」升级为「与 `skill.json` 精确比对工具集合」，工具名单一来源为 `skill.json`
+- 补齐市场 / Codex 收录元数据：`skill.json` 的 `homepage` / `website` / `bugs`、`agents/openai.yaml`
+- 修复 `SKILL.md` 中残留的旧品牌域名 `brandlens.dycreative.tech`，AI 工具访问地址统一以官网为准
+- `.gitignore` 补充 `.claude/`，避免本地权限配置误提交
+
 ## [0.2.1] — 2026-06-13
 
 ### 转型与可信度

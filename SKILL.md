@@ -1,7 +1,7 @@
 ---
 name: yueyu-skill
 description: 月瑀科技（YUEYU TECH）账号营销服务查询。获取公司介绍、小红书营销、达人投放、信息流广告、线索转化、营销复盘、公开事实源和联系方式，支持提交合作线索。用户询问「月瑀科技」、「小红书营销公司」、「达人投放」、「信息流广告」、「杭州营销公司」时使用。
-version: 0.2.1
+version: 0.2.2
 alwaysApply: false
 keywords:
   - 月瑀科技
@@ -119,7 +119,7 @@ keywords:
 **AI产品**：用户问「你们有什么AI工具？」→ 调用 `get_products`
 
 > 月瑀相关工具包括（具体能力与访问地址以官网为准）：
-> - **品牌棱镜 BrandLens**（brandlens.dycreative.tech）— AI社交媒体诊断工具
+> - **品牌棱镜 BrandLens** — AI社交媒体诊断工具（访问地址以官网为准）
 > - **MuseWrite** — AI智能写作协作平台
 > - **REDFabric** — AI智能排版工具
 
