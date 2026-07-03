@@ -90,7 +90,7 @@
     {
       "name": "get_products",
       "display_name": "AI产品",
-      "description": "获取月瑀相关工具与资料信息。返回品牌棱镜BrandLens、MuseWrite、REDFabric 等工具的功能、定位和访问地址。用户询问「AI产品」、「BrandLens」、「MuseWrite」、「品牌诊断工具」时使用。无需输入参数。",
+      "description": "获取月瑀相关工具与资料信息。返回品牌棱镜BrandLens、MuseWrite、REDFabric 等工具的功能与定位（访问地址以官网为准）。用户询问「AI产品」、「BrandLens」、「MuseWrite」、「品牌诊断工具」时使用。无需输入参数。",
       "inputSchema": {
         "type": "object",
         "properties": {},
@@ -160,7 +160,7 @@
     {
       "name": "submit_lead",
       "display_name": "提交合作线索",
-      "description": "提交客户合作线索到月瑀科技的商务团队。线索会实时推送到飞书并写入CRM表格，商务团队会尽快联系客户。用户说「我想合作」、「帮我留个信息」、「提交需求」、「咨询一下」时使用。需要提供姓名和至少一种联系方式（电话或微信号）。",
+      "description": "提交客户合作线索到月瑀科技的商务团队。线索会实时推送到飞书并写入CRM表格，商务团队会尽快联系客户。用户说「我想合作」、「帮我留个信息」、「提交需求」、「咨询一下」时使用。需要提供姓名和至少一种联系方式（电话或微信号）。提交前应向用户说明：信息仅用于商务联系。",
       "inputSchema": {
         "type": "object",
         "properties": {

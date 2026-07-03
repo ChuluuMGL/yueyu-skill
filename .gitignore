@@ -1,0 +1,11 @@
+# macOS
+.DS_Store
+
+# 编辑器 / IDE
+.vscode/
+.idea/
+*.swp
+
+# 本地环境
+.env
+.env.local

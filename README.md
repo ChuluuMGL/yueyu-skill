@@ -167,6 +167,11 @@ yueyu-skill/
 └── LICENSE
 ```
 
+## 相关 Skill
+
+- [proposal-ppt-skill](https://github.com/ChuluuMGL/proposal-ppt-skill) — 生成商业提案 PPT 与逐字稿
+- [business-website-skill](https://github.com/ChuluuMGL/business-website-skill) — 构建客户级企业 / 品牌 / 营销网站
+
 ## License
 
 MIT
