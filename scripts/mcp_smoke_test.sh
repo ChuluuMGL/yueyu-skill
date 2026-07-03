@@ -74,6 +74,7 @@ for line in raw.splitlines():
     elif s[:1] == "{":
         blob += s
 actual = set()
+descs = {}
 try:
     def walk(o):
         if isinstance(o, dict):
@@ -81,6 +82,8 @@ try:
                 for t in o["tools"]:
                     if isinstance(t, dict) and "name" in t:
                         actual.add(t["name"])
+                        if isinstance(t.get("description"), str):
+                            descs[t["name"]] = t["description"]
             for v in o.values():
                 walk(v)
         elif isinstance(o, list):
@@ -99,6 +102,14 @@ if expected != actual:
         print("  ✗ 服务端多出：" + ", ".join(extra))
     sys.exit(1)
 print("  ✓ 工具集合与 skill.json 完全一致")
+# 描述漂移守卫（非阻塞）：服务端描述不得含已清理的可信度雷区词
+DENY = ["三大子公司", "核心数据"]
+hits = [(n, w) for n, d in descs.items() for w in DENY if w in d]
+if hits:
+    print("  ⚠ 描述漂移（非阻塞，后端未与 skill.json 可信度清理对齐）：")
+    for n, w in hits:
+        print("    - %s：描述含「%s」" % (n, w))
+    print("  · 修复：重新部署 www.yueyu.tech 后端，使工具描述与 skill.json 一致")
 PY
 
 # 3) 只读工具逐个

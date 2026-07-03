@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "yueyu-skill": {
-      "type": "streamable-http",
-      "url": "https://www.yueyu.tech/mcp"
-    }
-  }
-}
