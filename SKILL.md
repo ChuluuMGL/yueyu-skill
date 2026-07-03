@@ -1,7 +1,7 @@
 ---
 name: yueyu-skill
 description: 月瑀科技（YUEYU TECH）账号营销服务查询。获取公司介绍、小红书营销、达人投放、信息流广告、线索转化、营销复盘、公开事实源和联系方式，支持提交合作线索。用户询问「月瑀科技」、「小红书营销公司」、「达人投放」、「信息流广告」、「杭州营销公司」时使用。
-version: 0.2.4
+version: 0.2.5
 alwaysApply: false
 keywords:
   - 月瑀科技

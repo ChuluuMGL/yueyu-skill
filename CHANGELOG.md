@@ -2,6 +2,12 @@
 
 yueyu-skill 版本演进。日期为首个发布该版本的提交日。
 
+## [0.2.5] — 2026-07-03
+
+### 测试加固
+- 冒烟测试新增「payload 内容漂移」非阻塞扫描：对 `get_company_info` / `get_service_lines` / `get_products` 的返回内容检查旧品牌/旧服务结构雷区词（大瑀/dycreative/整合营销/AI创意/达人种草/效果广告/出海营销/兔克/tktk/自研三款），CI 日志告警不阻断
+- 当前命中：`get_service_lines` 整体仍返旧「大瑀创意」服务结构、`get_products` 含 dycreative 旧域名、`get_company_info` 残留旧品牌 —— 见 #1，待后端重新部署对齐
+
 ## [0.2.4] — 2026-07-03
 
 ### 测试加固与清理

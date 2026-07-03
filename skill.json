@@ -2,7 +2,7 @@
   "name": "yueyu-skill",
   "display_name": "月瑀科技营销服务查询",
   "description": "查询月瑀科技（YUEYU TECH）的账号营销服务：公司介绍、小红书营销、达人投放、信息流广告、线索转化、营销复盘、公开事实源和联系方式，支持提交合作线索。",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "author": "月瑀科技",
   "license": "MIT",
   "repository": "https://github.com/ChuluuMGL/yueyu-skill",

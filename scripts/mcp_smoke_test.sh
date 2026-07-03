@@ -44,6 +44,26 @@ call_tool () {  # call_tool <tool-name> —— 只传工具名，body 花括号�
   raw "{\"jsonrpc\":\"2.0\",\"id\":${ID},\"method\":\"tools/call\",\"params\":{\"name\":\"$1\",\"arguments\":{}}}"
 }
 
+scan_drift () {  # scan_drift <tool> <body-file> —— payload 内容漂移扫描（非阻塞）
+  python3 - "$1" "$2" <<'PY'
+import sys
+tool, path = sys.argv[1], sys.argv[2]
+DENY = {
+    "get_company_info": ["大瑀", "dycreative", "三大子公司", "核心数据", "整合营销", "AI创意"],
+    "get_service_lines": ["大瑀", "dycreative", "整合营销", "AI创意", "达人种草", "效果广告", "出海营销", "兔克", "tktk"],
+    "get_products": ["dycreative", "自研三款", "自研的"],
+}
+deny = DENY.get(tool)
+if not deny:
+    sys.exit(0)
+txt = open(path, encoding="utf-8").read()
+hits = [w for w in deny if w in txt]
+if hits:
+    print("  ⚠ 内容漂移（非阻塞）%s：含 %s" % (tool, "、".join(hits)))
+    print("    后端未与 skill.json 对齐，需重新部署（见 issue #1）")
+PY
+}
+
 printf 'Endpoint: %s\n' "$ENDPOINT"
 
 # 1) initialize（-D 抓 Mcp-Session-Id）
@@ -112,10 +132,13 @@ if hits:
     print("  · 修复：重新部署 www.yueyu.tech 后端，使工具描述与 skill.json 一致")
 PY
 
-# 3) 只读工具逐个
+# 3) 只读工具逐个（顺带做 payload 内容漂移扫描，非阻塞）
 printf '[3/3] 只读工具\n'
 for t in get_company_info get_service_lines get_methodology get_products get_latest_reports get_contact_info; do
-  ok "$t" "$(call_tool "$t")"
+  BODY="$(call_tool "$t")"
+  ok "$t" "$BODY"
+  printf '%s' "$BODY" > "$LIST_FILE"
+  scan_drift "$t" "$LIST_FILE"
 done
 
 printf '\n结果：%s 通过，%s 失败\n' "$PASS" "$FAIL"
