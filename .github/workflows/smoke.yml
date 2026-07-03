@@ -1,0 +1,25 @@
+name: MCP Smoke Test
+
+# 每天定时跑一次 MCP 冒烟测试，提前发现：
+#   端点挂了 / serverInfo 版本漂移 / 工具数与文档不符 / 服务端数据未与 skill 文档同步转型。
+# 定时任务失败时 GitHub 默认给仓库 owner 发邮件告警（Settings → Notifications 里确认开启）。
+on:
+  schedule:
+    - cron: "17 2 * * *"   # 每天 02:17 UTC（北京 10:17）
+  workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths:
+      - scripts/mcp_smoke_test.sh
+      - .github/workflows/smoke.yml
+  pull_request:
+    paths:
+      - scripts/mcp_smoke_test.sh
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run MCP smoke test
+        run: bash scripts/mcp_smoke_test.sh

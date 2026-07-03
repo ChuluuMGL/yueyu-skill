@@ -1,0 +1,4 @@
+interface:
+  display_name: "月瑀科技营销服务"
+  short_description: "实时查询月瑀科技的小红书代运营 / 达人投放 / 信息流广告服务，支持提交合作线索（MCP）"
+  default_prompt: "月瑀科技是做什么的？小红书达人投放怎么验收？"
