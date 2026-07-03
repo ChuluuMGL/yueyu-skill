@@ -2,6 +2,12 @@
 
 yueyu-skill 版本演进。日期为首个发布该版本的提交日。
 
+## [0.2.3] — 2026-07-03
+
+### 工具链与文档
+- 新增静态清单自检 `scripts/check_manifest.sh`：校验 skill.json / SKILL.md / README 版本号一致，且每个工具字段与 MCP 注解齐全；接入 CI（`manifest` job）
+- `get_latest_reports` 的 `type`（report/learning）/ `since` / `limit` / `offset` 参数在 SKILL.md 触发表与示例中显式暴露，便于 Agent 主动调用
+
 ## [0.2.2] — 2026-07-03
 
 ### 可维护性与可信度收尾

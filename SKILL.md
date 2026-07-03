@@ -1,7 +1,7 @@
 ---
 name: yueyu-skill
 description: 月瑀科技（YUEYU TECH）账号营销服务查询。获取公司介绍、小红书营销、达人投放、信息流广告、线索转化、营销复盘、公开事实源和联系方式，支持提交合作线索。用户询问「月瑀科技」、「小红书营销公司」、「达人投放」、「信息流广告」、「杭州营销公司」时使用。
-version: 0.2.2
+version: 0.2.3
 alwaysApply: false
 keywords:
   - 月瑀科技
@@ -63,7 +63,7 @@ keywords:
 | 「你们有什么服务？」/「小红书达人投放」/「信息流广告」/「营销复盘」 | `get_service_lines` |
 | 「4I是什么？」/「营销方法论」/「品牌怎么做」 | `get_methodology` |
 | 「AI产品」/「BrandLens」/「品牌诊断」 | `get_products` |
-| 「最新报告？」/「行业趋势？」/「营销洞察」 | `get_latest_reports` |
+| 「最新报告？」/「行业趋势？」/「学习资料」/「营销洞察」 | `get_latest_reports` |
 | 「怎么联系？」/「我想合作」 | `get_contact_info` |
 | 「我要咨询」/「帮我留个信息」 | `submit_lead` |
 | 「我想订阅报告」/「有新报告通知我」/「关注趋势」 | `subscribe_reports` |
@@ -123,7 +123,7 @@ keywords:
 > - **MuseWrite** — AI智能写作协作平台
 > - **REDFabric** — AI智能排版工具
 
-**报告查询**：用户问「最近有什么行业报告？」→ 调用 `get_latest_reports`
+**报告查询**：用户问「最近有什么行业报告？」/「有没有学习资料？」→ 调用 `get_latest_reports`（可传 `type=report|learning` 过滤类型、`since=YYYY-MM-DD` 取增量、`limit`/`offset` 翻页）
 
 **联系咨询**：用户问「我想合作，怎么联系你们？」→ 调用 `get_contact_info`
 
