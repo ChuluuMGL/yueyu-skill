@@ -6,6 +6,9 @@ Hard-fails when:
   - skill.json and the live server expose different tool names;
   - required fields, parameter keys, enum values, or MCP annotations drift;
   - old brand/service terms reappear in tool descriptions or read-only payloads;
+  - canonical facts go missing from read-only payloads (e.g. the high-tech
+    enterprise record number, the 5 service-line names, product names) — i.e.
+    the server must return correct content, not merely non-banned content;
   - local package contracts regress, especially submit_lead requiring
     name plus phone-or-wechat;
   - version strings drift across skill.json / SKILL.md / README / agents/openai.yaml.
@@ -41,6 +44,19 @@ OLD_TERMS = {
 }
 
 DESCRIPTION_DENY = ["大瑀", "dycreative", "三大子公司", "核心数据", "兔克", "tktk"]
+
+# Canonical facts each read-only payload MUST contain (positive correctness).
+# Source of truth: skill.json / SKILL.md. If a canonical fact changes, update
+# the skill docs AND this table together — the check then keeps it enforced
+# end-to-end and catches the backend silently dropping or altering it.
+REQUIRED_TERMS = {
+    "get_company_info": ["月瑀科技", "GR202533012042", "186-1155-3805"],
+    "get_service_lines": ["账号营销", "小红书达人投放", "信息流广告", "线索转化", "营销复盘"],
+    "get_methodology": ["3Insights", "4I", "5D"],
+    "get_products": ["BrandLens", "MuseWrite", "REDFabric"],
+    "get_contact_info": ["chuluu@yueyutech.cn", "186-1155-3805"],
+    "get_latest_reports": ["reports"],
+}
 
 
 def read(path):
@@ -162,6 +178,9 @@ def check_payloads():
         hits = [term for term in OLD_TERMS.get(name, []) if term in raw]
         if hits:
             errors.append(f"  ✗ '{name}': payload contains blocked terms: {', '.join(hits)}")
+        missing = [term for term in REQUIRED_TERMS.get(name, []) if term not in raw]
+        if missing:
+            errors.append(f"  ✗ '{name}': payload missing canonical terms: {', '.join(missing)}")
     return errors, warnings
 
 
@@ -234,7 +253,7 @@ def main():
             print(error)
         print("\nFix: update skill.json/SKILL.md/README/agents metadata or deploy the website MCP backend to match.")
         sys.exit(1)
-    print("\n✓ No blocking drift — tools, schemas, annotations, payload guardrails, versions, and local contracts are consistent.")
+    print("\n✓ No blocking drift — tools, schemas, annotations, payload guardrails (blocked + canonical terms), versions, and local contracts are consistent.")
     if warnings:
         print(f"  ({len(warnings)} non-fatal warning(s) listed above)")
 
