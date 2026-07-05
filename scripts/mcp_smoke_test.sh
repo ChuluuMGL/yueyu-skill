@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # yueyu-skill MCP 冒烟测试
 # 验证：端点可达、initialize 成功、tools/list 工具集合与 skill.json 完全一致、各只读工具返回非错误。
-# 顺带打印 serverInfo.version 与工具集合，便于发现「服务端版本漂移」「工具集与 skill.json 不符」「服务端数据与 skill 文档不一致」。
+# 同时阻断旧品牌/旧服务结构回流，避免 CI 绿灯但日志里藏着漂移告警。
 # 用法： bash scripts/mcp_smoke_test.sh [endpoint]
 # 退出码：0 全过；非 0 有失败。
 #
@@ -44,7 +44,7 @@ call_tool () {  # call_tool <tool-name> —— 只传工具名，body 花括号�
   raw "{\"jsonrpc\":\"2.0\",\"id\":${ID},\"method\":\"tools/call\",\"params\":{\"name\":\"$1\",\"arguments\":{}}}"
 }
 
-scan_drift () {  # scan_drift <tool> <body-file> —— payload 内容漂移扫描（非阻塞）
+scan_drift () {  # scan_drift <tool> <body-file> —— payload 内容漂移扫描（阻塞）
   python3 - "$1" "$2" <<'PY'
 import sys
 tool, path = sys.argv[1], sys.argv[2]
@@ -59,8 +59,9 @@ if not deny:
 txt = open(path, encoding="utf-8").read()
 hits = [w for w in deny if w in txt]
 if hits:
-    print("  ⚠ 内容漂移（非阻塞）%s：含 %s" % (tool, "、".join(hits)))
-    print("    后端未与 skill.json 对齐，需重新部署（见 issue #1）")
+    print("  ✗ 内容漂移 %s：含 %s" % (tool, "、".join(hits)))
+    print("    后端未与 skill.json 对齐，需重新部署")
+    sys.exit(1)
 PY
 }
 
@@ -122,23 +123,28 @@ if expected != actual:
         print("  ✗ 服务端多出：" + ", ".join(extra))
     sys.exit(1)
 print("  ✓ 工具集合与 skill.json 完全一致")
-# 描述漂移守卫（非阻塞）：服务端描述不得含已清理的可信度雷区词
-DENY = ["三大子公司", "核心数据"]
+# 描述漂移守卫：服务端描述不得含已清理的可信度/旧品牌雷区词
+DENY = ["大瑀", "dycreative", "三大子公司", "核心数据", "兔克", "tktk"]
 hits = [(n, w) for n, d in descs.items() for w in DENY if w in d]
 if hits:
-    print("  ⚠ 描述漂移（非阻塞，后端未与 skill.json 可信度清理对齐）：")
+    print("  ✗ 描述漂移（后端未与 skill.json 可信度清理对齐）：")
     for n, w in hits:
         print("    - %s：描述含「%s」" % (n, w))
     print("  · 修复：重新部署 www.yueyu.tech 后端，使工具描述与 skill.json 一致")
+    sys.exit(1)
 PY
 
-# 3) 只读工具逐个（顺带做 payload 内容漂移扫描，非阻塞）
+# 3) 只读工具逐个（顺带做 payload 内容漂移扫描，发现旧内容即失败）
 printf '[3/3] 只读工具\n'
 for t in get_company_info get_service_lines get_methodology get_products get_latest_reports get_contact_info; do
   BODY="$(call_tool "$t")"
   ok "$t" "$BODY"
   printf '%s' "$BODY" > "$LIST_FILE"
-  scan_drift "$t" "$LIST_FILE"
+  if scan_drift "$t" "$LIST_FILE"; then
+    :
+  else
+    FAIL=$((FAIL+1))
+  fi
 done
 
 printf '\n结果：%s 通过，%s 失败\n' "$PASS" "$FAIL"

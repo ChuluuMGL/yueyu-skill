@@ -1,4 +1,53 @@
-interface:
-  display_name: "月瑀科技营销服务"
-  short_description: "实时查询月瑀科技的小红书代运营 / 达人投放 / 信息流广告服务，支持提交合作线索（MCP）"
-  default_prompt: "月瑀科技是做什么的？小红书达人投放怎么验收？"
+# OpenAI / Codex agent metadata for yueyu-skill.
+# Mirrors skill.json so an OpenAI/Codex consumer can discover the MCP endpoint,
+# tool inventory, version, and write-tool guardrails without opening skill.json.
+
+version: 0.2.5
+display_name: "月瑀科技营销服务查询"
+short_description: "实时查询月瑀科技的小红书代运营、达人投放、信息流广告、线索转化和营销复盘服务，支持提交合作线索（MCP）。"
+default_prompt: "Use $yueyu-skill to answer questions about 月瑀科技 / YUEYU TECH: company info, service lines, methodology, AI tools, latest reports, and contact details. For partnership intent, collect name plus phone or wechat before calling submit_lead."
+
+mcp:
+  transport: streamable-http
+  url: https://www.yueyu.tech/mcp
+  protocol_version: "2025-03-26"
+
+policy:
+  allow_implicit_invocation: true
+
+# Tool inventory (9 = 6 query + 3 write). Names and core schemas are checked
+# against the live server by scripts/check_mcp_drift.py.
+tools:
+  - name: get_company_info
+    type: query
+    description: 公司基本信息（名称、简介、公开事实源、办公地址和联系方式）。无参数。
+  - name: get_service_lines
+    type: query
+    description: 核心服务板块（账号营销、小红书达人投放、信息流广告、线索转化、营销复盘）。无参数。
+  - name: get_methodology
+    type: query
+    description: 3Insights、4I Wheels、5D Model 等品牌营销方法论。无参数。
+  - name: get_products
+    type: query
+    description: BrandLens、MuseWrite、REDFabric 等相关工具与资料。无参数，访问地址以官网为准。
+  - name: get_latest_reports
+    type: query
+    description: 最新行业报告与学习资料。参数：limit（默认5，最大20）、since（YYYY-MM-DD 增量）、offset（翻页）、type（report/learning）。
+  - name: get_contact_info
+    type: query
+    description: 商务联系方式（电话、邮箱、微信说明、地址、工作时间）。无参数。
+  - name: submit_lead
+    type: write
+    description: 提交合作线索到商务团队（飞书 + CRM）。需 name + 至少一种联系方式（phone 或 wechat）；提交前必须告知仅用于商务联系。
+  - name: subscribe_reports
+    type: write
+    description: 订阅行业报告与学习资料推送。需 channel（email/wechat/webhook）+ address。
+  - name: unsubscribe_reports
+    type: write
+    description: 取消订阅报告推送。需 address。
+
+guardrails:
+  no_fabrication: 回答具体服务、案例、报价、合同、效果承诺前必须先调用对应工具；没有公开核验的信息就说明不知道。
+  write_validation: 调用写入类工具前必须校验必填参数，缺失则先向用户追问。
+  privacy_notice: 收集姓名、电话、微信等联系方式前，说明信息仅提交给月瑀科技商务团队用于联系合作。
+  fallback: MCP 超时（>5s）时可用 SKILL.md 静态数据降级回复；仍不得编造未核验事实。

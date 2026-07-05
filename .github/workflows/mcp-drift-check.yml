@@ -1,0 +1,40 @@
+name: MCP Drift Check
+
+# Catches drift between this skill package and the deployed MCP server.
+# Push/PR runs protect repo-side edits; the daily schedule catches server-side
+# regressions even when no files changed here.
+on:
+  push:
+    branches: [main]
+    paths:
+      - skill.json
+      - SKILL.md
+      - README.md
+      - CHANGELOG.md
+      - agents/openai.yaml
+      - scripts/check_mcp_drift.py
+      - .github/workflows/mcp-drift-check.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - skill.json
+      - SKILL.md
+      - README.md
+      - CHANGELOG.md
+      - agents/openai.yaml
+      - scripts/check_mcp_drift.py
+      - .github/workflows/mcp-drift-check.yml
+  schedule:
+    - cron: "37 2 * * *"   # daily 02:37 UTC / Beijing 10:37
+  workflow_dispatch: {}
+
+jobs:
+  drift-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compare skill package against live MCP server
+        run: python3 scripts/check_mcp_drift.py
+        env:
+          MCP_URL: https://www.yueyu.tech/mcp
+          SKILL_JSON: skill.json

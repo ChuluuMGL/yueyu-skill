@@ -1,6 +1,6 @@
 name: CI
 
-# smoke job 每天定时跑一次 MCP 冒烟测试，提前发现：
+# smoke job 在定时/手动时跑 MCP 冒烟测试，提前发现：
 #   端点挂了 / serverInfo 版本漂移 / 工具集与 skill.json 不符 / 服务端数据未与 skill 文档同步转型。
 # manifest job 静态校验 skill 清单（版本号一致 + 工具字段齐全），push / PR 时跑。
 # 定时任务失败时 GitHub 默认给仓库 owner 发邮件告警（Settings → Notifications 里确认开启）。
@@ -11,16 +11,32 @@ on:
   push:
     branches: [main]
     paths:
+      - skill.json
+      - SKILL.md
+      - README.md
+      - CHANGELOG.md
+      - agents/openai.yaml
       - scripts/mcp_smoke_test.sh
       - scripts/check_manifest.sh
+      - scripts/check_mcp_drift.py
       - .github/workflows/smoke.yml
+      - .github/workflows/mcp-drift-check.yml
   pull_request:
     paths:
+      - skill.json
+      - SKILL.md
+      - README.md
+      - CHANGELOG.md
+      - agents/openai.yaml
       - scripts/mcp_smoke_test.sh
       - scripts/check_manifest.sh
+      - scripts/check_mcp_drift.py
+      - .github/workflows/smoke.yml
+      - .github/workflows/mcp-drift-check.yml
 
 jobs:
   smoke:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

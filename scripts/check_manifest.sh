@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 # yueyu-skill 清单静态自检（不联网、无副作用）
 # 校验：1) skill.json / SKILL.md / README 徽章与表格 版本号一致；
-#       2) 每个工具具备 name/description/inputSchema 及 4 个 MCP 注解，且工具名不重复。
+#       2) 每个工具具备 name/description/inputSchema 及 4 个 MCP 注解，且工具名不重复；
+#       3) 写入类关键合同（submit_lead / subscribe_reports）保持机器可读。
 # 用法： bash scripts/check_manifest.sh
 # 退出码：0 通过；非 0 有失败。
 set -uo pipefail
@@ -25,6 +26,8 @@ with open(os.path.join(root, "SKILL.md"), encoding="utf-8") as f:
             v_skill = line.split()[1] if len(line.split()) > 1 else None
             break
 readme = open(os.path.join(root, "README.md"), encoding="utf-8").read()
+agent_path = os.path.join(root, "agents", "openai.yaml")
+agent_meta = open(agent_path, encoding="utf-8").read() if os.path.exists(agent_path) else ""
 m_badge = re.search(r"badge/version-(\d+\.\d+\.\d+)", readme)
 m_table = re.search(r"\|\s*版本\s*\|\s*(\d+\.\d+\.\d+)", readme)
 v_badge = m_badge.group(1) if m_badge else None
@@ -62,6 +65,28 @@ else:
             errors.append("%s：annotations 缺 %s" % (name, ",".join(miss)))
 
 print("工具数：%d" % len(names))
+
+# 3) 写入类关键合同
+by_name = {t.get("name"): t for t in tools if isinstance(t, dict)}
+submit = by_name.get("submit_lead") or {}
+submit_schema = submit.get("inputSchema") or {}
+if set(submit_schema.get("required") or []) != {"name"}:
+    errors.append("submit_lead：required 必须只包含 name")
+anyof = submit_schema.get("anyOf") or []
+anyof_sets = {tuple(sorted(item.get("required") or [])) for item in anyof if isinstance(item, dict)}
+if anyof_sets != {("phone",), ("wechat",)}:
+    errors.append("submit_lead：必须用 anyOf 要求 phone 或 wechat 至少一个")
+
+subscribe = by_name.get("subscribe_reports") or {}
+subscribe_schema = subscribe.get("inputSchema") or {}
+channel = ((subscribe_schema.get("properties") or {}).get("channel") or {})
+if set(channel.get("enum") or []) != {"email", "wechat", "webhook"}:
+    errors.append("subscribe_reports：channel enum 必须为 email / wechat / webhook")
+
+m_agent = re.search(r"(?m)^version:\s*([^\s]+)", agent_meta)
+if agent_meta and (not m_agent or m_agent.group(1) != v_json):
+    errors.append("agents/openai.yaml：version 必须与 skill.json 一致")
+
 if errors:
     print("\n✗ 清单自检失败：")
     for e in errors:

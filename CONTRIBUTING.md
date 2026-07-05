@@ -1,0 +1,37 @@
+# Contributing
+
+感谢你关注月瑀科技 AI Skill。本仓库包含 Skill 定义文件、文档和校验脚本；远程 MCP 服务端由月瑀科技维护，服务端源码不一定与本仓库同一发布节奏。
+
+## 可以贡献什么
+
+- 文档改进：`README.md`、`SKILL.md`、示例和安装说明。
+- 工具合同对齐：发现 `skill.json` 与线上 `tools/list` 的工具名、参数、enum、annotations 不一致时，可提交修正。
+- 兼容性补充：更多 IDE / agent 的安装路径和实测结果。
+- 脚本与 CI：`scripts/check_manifest.sh`、`scripts/mcp_smoke_test.sh`、`scripts/check_mcp_drift.py` 和 workflow 增强。
+
+## 提交前请确认
+
+1. 改动工具定义时，先跑：
+
+   ```bash
+   python3 scripts/check_mcp_drift.py
+   bash scripts/check_manifest.sh
+   bash scripts/mcp_smoke_test.sh
+   ```
+
+2. 不要编造案例、客户数量、排名、效果承诺、合同条款或未经公开核验的数据。
+3. 写入类工具必须保留前置校验：`submit_lead` 需要姓名加电话或微信；订阅/退订需要明确接收地址。
+4. 如果版本号变化，必须同步 `skill.json`、`SKILL.md`、`README.md`、`agents/openai.yaml`，并在合并后同步 tag/release。
+
+## 不接受的范围
+
+- 商务咨询类 issue：请访问官网或使用 `submit_lead` 留资。
+- 远程 MCP 服务端部署请求：可以报告 drift，但实际部署由维护者处理。
+- 虚假营销材料、不可核验数据或夸大式效果承诺。
+
+## 流程
+
+1. Fork 或新建分支。
+2. 修改并完成本地校验。
+3. 提 PR，说明改动动机和测试结果。
+4. CI 通过后等待维护者 review。

@@ -4,15 +4,20 @@
 > 一个开源 MCP Skill —— 接入 Claude / Cursor / 任意 MCP 客户端后，你的 AI 就能实时了解月瑀的服务、方法论，并直接帮你提交合作线索。
 > *Put YUEYU TECH's Xiaohongshu marketing services into your AI assistant — a live MCP skill.*
 
+![月瑀科技 AI Skill](social-preview.png)
+
 [![AI Skill](https://img.shields.io/badge/AI%20Skill-yueyu--skill-0E5E43)](https://github.com/ChuluuMGL/yueyu-skill)
 [![MCP](https://img.shields.io/badge/Protocol-MCP-blue)](https://modelcontextprotocol.io/)
-[![Version](https://img.shields.io/badge/version-0.2.5-green)](https://github.com/ChuluuMGL/yueyu-skill)
+[![Version](https://img.shields.io/badge/version-0.2.5-green)](https://github.com/ChuluuMGL/yueyu-skill/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow)](https://opensource.org/licenses/MIT)
 [![Endpoint](https://img.shields.io/website?url=https%3A%2F%2Fwww.yueyu.tech%2Fmcp&label=MCP%20Endpoint)](https://www.yueyu.tech/mcp)
+[![Drift Check](https://github.com/ChuluuMGL/yueyu-skill/actions/workflows/mcp-drift-check.yml/badge.svg)](https://github.com/ChuluuMGL/yueyu-skill/actions/workflows/mcp-drift-check.yml)
 
 **国家高新技术企业 · 备案编号 `GR202533012042` · 杭州**
 
 ---
+
+> 当前稳定版：`v0.2.5`（GitHub Release）。`main` 分支保持为最新已校验代码；每次版本号更新后同步打 tag/release，避免安装页与源码版本脱节。
 
 ## 装上能干嘛
 
@@ -98,6 +103,10 @@
 
 ## 接入与联系
 
+> **两种路径，能力不同：**
+> - **方式 A = 安装 Skill 包**：AI 助手获得 9 个工具 + 月瑀品牌调性、盲区红线、隐私告知和降级策略。
+> - **方式 B = 仅连接 MCP server**：AI 助手只获得 9 个查询/写入工具，适合只想接数据接口的场景。
+
 | 你的客户端 | 接入方式 |
 |---|---|
 | Claude Desktop / Cursor / Cline / Continue 等通用 MCP 客户端 | 用上面的 `mcpServers` URL 配置即可，**无需克隆** |
@@ -105,6 +114,16 @@
 
 **商务**：+86 186-1155-3805（微信同号 178 8790 0622）· chuluu@yueyutech.cn · 杭州萧山区农业大厦 1 座 2005 室
 **关注月瑀**：[小红书](https://www.xiaohongshu.com/user/profile/6706447e000000001d031a68) · [抖音](https://www.douyin.com/user/MS4wLjABAAAAEHnj91dHGmeatPJBSawvaS0PSwaaesRqkUyPGj37GnA) · [官网](https://www.yueyu.tech/)
+
+---
+
+## 数据与隐私
+
+本 Skill 通过远程 MCP 端点提供实时数据。使用写入类工具时请注意：
+
+- **提交合作线索（`submit_lead`）**：姓名、电话/微信、公司、需求备注会提交给月瑀科技商务团队（飞书 + CRM），仅用于商务跟进联系。
+- **订阅报告（`subscribe_reports`）**：邮箱、微信号或 Webhook URL 仅用于推送新报告通知，可随时通过 `unsubscribe_reports` 取消。
+- **查询类工具**：公司介绍、服务、方法论、报告、联系方式查询不需要用户个人信息。
 
 ---
 
@@ -141,6 +160,9 @@ yueyu-skill/
 ├── skill.json                  # 机器可读配置（工具定义 / 品牌调性）
 ├── scripts/mcp_smoke_test.sh   # MCP 冒烟测试
 ├── scripts/check_manifest.sh   # 清单自检（版本一致 + 工具字段）
+├── scripts/check_mcp_drift.py  # live MCP / skill 包漂移检查
+├── agents/openai.yaml          # OpenAI / Codex agent 元数据
+├── .github/workflows/          # smoke + drift-check CI
 ├── README.md · CHANGELOG.md · LICENSE
 ```
 

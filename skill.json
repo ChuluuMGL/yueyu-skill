@@ -109,7 +109,7 @@
     {
       "name": "get_latest_reports",
       "display_name": "行业报告与洞察",
-      "description": "获取月瑀科技发布的最新行业报告与学习资料。返回报告列表，每条包含标题、摘要、发布日期、类型（战略分享/行业趋势/学习资料）。可通过 since 参数获取指定日期之后的新报告，通过 offset 参数翻页。",
+      "description": "获取月瑀科技发布的最新行业报告与学习资料。返回报告列表，每条包含标题、摘要、发布日期、类型（战略分享/行业趋势/学习资料）。可通过 limit 参数控制数量，通过 since 参数获取指定日期之后的新报告，通过 offset 参数翻页，通过 type 参数过滤 report 或 learning。",
       "inputSchema": {
         "type": "object",
         "properties": {
@@ -188,7 +188,11 @@
             "description": "需求备注（可选），如想了解的服务、预算范围等"
           }
         },
-        "required": ["name"]
+        "required": ["name"],
+        "anyOf": [
+          { "required": ["phone"] },
+          { "required": ["wechat"] }
+        ]
       },
       "annotations": {
         "readOnlyHint": false,
