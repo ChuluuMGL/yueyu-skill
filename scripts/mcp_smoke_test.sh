@@ -3,6 +3,7 @@
 # 验证：端点可达、initialize 成功、tools/list 工具集合与 skill.json 完全一致、各只读工具返回非错误、
 #       写入类工具拒绝缺失/非法参数。
 # 同时阻断旧品牌/旧服务结构回流，避免 CI 绿灯但日志里藏着漂移告警。
+# 漂移词表来自 scripts/drift_terms.json（与 check_mcp_drift.py 共用单一源）。
 # 用法： bash scripts/mcp_smoke_test.sh [endpoint]
 # 退出码：0 全过；非 0 有失败。
 #
@@ -13,6 +14,7 @@ set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SKILL_JSON="${SCRIPT_DIR}/../skill.json"
+DRIFT_TERMS_JSON="${SCRIPT_DIR}/drift_terms.json"
 EXPECTED_VERSION="$(python3 - "$SKILL_JSON" <<'PY'
 import json, sys
 print(json.load(open(sys.argv[1], encoding="utf-8")).get("version", ""))
@@ -61,16 +63,11 @@ call_tool_args () {  # call_tool_args <tool-name> <json-args> —— json-args �
   raw "{\"jsonrpc\":\"2.0\",\"id\":${ID},\"method\":\"tools/call\",\"params\":{\"name\":\"$1\",\"arguments\":$2}}"
 }
 
-scan_drift () {  # scan_drift <tool> <body-file> —— payload 内容漂移扫描（阻塞）
-  python3 - "$1" "$2" <<'PY'
-import sys
-tool, path = sys.argv[1], sys.argv[2]
-DENY = {
-    "get_company_info": ["大瑀", "dycreative", "三大子公司", "核心数据", "整合营销", "AI创意"],
-    "get_service_lines": ["大瑀", "dycreative", "整合营销", "AI创意", "达人种草", "效果广告", "出海营销", "兔克", "tktk"],
-    "get_products": ["dycreative", "自研三款", "自研的"],
-}
-deny = DENY.get(tool)
+scan_drift () {  # scan_drift <tool> <body-file> —— payload 内容漂移扫描（阻塞）；词表来自 drift_terms.json
+  python3 - "$1" "$2" "$DRIFT_TERMS_JSON" <<'PY'
+import json, sys
+tool, path, terms_path = sys.argv[1], sys.argv[2], sys.argv[3]
+deny = json.load(open(terms_path, encoding="utf-8"))["payload_deny"].get(tool)
 if not deny:
     sys.exit(0)
 txt = open(path, encoding="utf-8").read()
@@ -142,9 +139,9 @@ printf '[2/4] tools/list\n'
 LIST=$(rpc tools/list)
 ok "tools/list" "$LIST"
 printf '%s' "$LIST" > "$LIST_FILE"
-if python3 - "$SKILL_JSON" "$LIST_FILE" <<'PY'; then PASS=$((PASS+1)); else FAIL=$((FAIL+1)); fi
+if python3 - "$SKILL_JSON" "$LIST_FILE" "$DRIFT_TERMS_JSON" <<'PY'; then PASS=$((PASS+1)); else FAIL=$((FAIL+1)); fi
 import json, re, sys
-expected = {t["name"] for t in json.load(open(sys.argv[1])).get("tools", [])}
+expected = {t["name"] for t in json.load(open(sys.argv[1]))["tools"]}
 raw = open(sys.argv[2]).read()
 blob = ""
 for line in raw.splitlines():
@@ -182,8 +179,8 @@ if expected != actual:
         print("  ✗ 服务端多出：" + ", ".join(extra))
     sys.exit(1)
 print("  ✓ 工具集合与 skill.json 完全一致")
-# 描述漂移守卫：服务端描述不得含已清理的可信度/旧品牌雷区词
-DENY = ["大瑀", "dycreative", "三大子公司", "核心数据", "兔克", "tktk"]
+# 描述漂移守卫：服务端描述不得含已清理的可信度/旧品牌雷区词（词表来自 drift_terms.json）
+DENY = json.load(open(sys.argv[3], encoding="utf-8"))["description_deny"]
 hits = [(n, w) for n, d in descs.items() for w in DENY if w in d]
 if hits:
     print("  ✗ 描述漂移（后端未与 skill.json 可信度清理对齐）：")

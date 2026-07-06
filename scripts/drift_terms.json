@@ -1,0 +1,17 @@
+{
+  "_comment": "Drift vocabulary shared by scripts/check_mcp_drift.py and scripts/mcp_smoke_test.sh. Single source of truth so the Python checker and the bash smoke test can never silently diverge. required_terms source of truth = skill.json / SKILL.md.",
+  "description_deny": ["大瑀", "dycreative", "三大子公司", "核心数据", "兔克", "tktk"],
+  "payload_deny": {
+    "get_company_info": ["大瑀", "dycreative", "三大子公司", "核心数据", "整合营销", "AI创意"],
+    "get_service_lines": ["大瑀", "dycreative", "整合营销", "AI创意", "达人种草", "效果广告", "出海营销", "兔克", "tktk"],
+    "get_products": ["dycreative", "自研三款", "自研的"]
+  },
+  "required_terms": {
+    "get_company_info": ["月瑀科技", "GR202533012042", "186-1155-3805"],
+    "get_service_lines": ["账号营销", "小红书达人投放", "信息流广告", "线索转化", "营销复盘"],
+    "get_methodology": ["3Insights", "4I", "5D"],
+    "get_products": ["BrandLens", "MuseWrite", "REDFabric"],
+    "get_contact_info": ["chuluu@yueyutech.cn", "186-1155-3805"],
+    "get_latest_reports": ["reports"]
+  }
+}

@@ -43,26 +43,16 @@ READ_ONLY_TOOLS = [
     "get_contact_info",
 ]
 
-OLD_TERMS = {
-    "get_company_info": ["大瑀", "dycreative", "三大子公司", "核心数据", "整合营销", "AI创意"],
-    "get_service_lines": ["大瑀", "dycreative", "整合营销", "AI创意", "达人种草", "效果广告", "出海营销", "兔克", "tktk"],
-    "get_products": ["dycreative", "自研三款", "自研的"],
-}
-
-DESCRIPTION_DENY = ["大瑀", "dycreative", "三大子公司", "核心数据", "兔克", "tktk"]
-
-# Canonical facts each read-only payload MUST contain (positive correctness).
-# Source of truth: skill.json / SKILL.md. If a canonical fact changes, update
-# the skill docs AND this table together — the check then keeps it enforced
-# end-to-end and catches the backend silently dropping or altering it.
-REQUIRED_TERMS = {
-    "get_company_info": ["月瑀科技", "GR202533012042", "186-1155-3805"],
-    "get_service_lines": ["账号营销", "小红书达人投放", "信息流广告", "线索转化", "营销复盘"],
-    "get_methodology": ["3Insights", "4I", "5D"],
-    "get_products": ["BrandLens", "MuseWrite", "REDFabric"],
-    "get_contact_info": ["chuluu@yueyutech.cn", "186-1155-3805"],
-    "get_latest_reports": ["reports"],
-}
+# Drift vocabulary lives in scripts/drift_terms.json so this Python checker and
+# scripts/mcp_smoke_test.sh share one source of truth and can never silently diverge.
+# Canonical facts (required_terms) source: skill.json / SKILL.md — update the docs
+# AND drift_terms.json together; the checks then keep them enforced end-to-end.
+_DRIFT_TERMS_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "drift_terms.json")
+with open(_DRIFT_TERMS_PATH, encoding="utf-8") as _f:
+    _DRIFT_TERMS = json.load(_f)
+OLD_TERMS = _DRIFT_TERMS["payload_deny"]
+DESCRIPTION_DENY = _DRIFT_TERMS["description_deny"]
+REQUIRED_TERMS = _DRIFT_TERMS["required_terms"]
 
 EXPECTED_CONTACT = {
     "phone": "+86 186-1155-3805",
