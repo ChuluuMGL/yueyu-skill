@@ -4,7 +4,7 @@
 > 一个开源 MCP Skill —— 接入 Claude / Cursor / 任意 MCP 客户端后，你的 AI 就能实时了解月瑀的服务、方法论，并直接帮你提交合作线索。
 > *Put YUEYU TECH's Xiaohongshu marketing services into your AI assistant — a live MCP skill.*
 
-![月瑀科技 AI Skill](social-preview.png)
+![月瑀科技 AI Skill](social-preview.png?v=20260706-yueyu-logo)
 
 [![AI Skill](https://img.shields.io/badge/AI%20Skill-yueyu--skill-0E5E43)](https://github.com/ChuluuMGL/yueyu-skill)
 [![MCP](https://img.shields.io/badge/Protocol-MCP-blue)](https://modelcontextprotocol.io/)
