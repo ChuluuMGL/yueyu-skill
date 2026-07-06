@@ -16,6 +16,7 @@ on:
       - assets/**
       - references/**
       - scripts/check_mcp_drift.py
+      - scripts/drift_terms.json
       - .github/workflows/mcp-drift-check.yml
   pull_request:
     branches: [main]
@@ -29,6 +30,7 @@ on:
       - assets/**
       - references/**
       - scripts/check_mcp_drift.py
+      - scripts/drift_terms.json
       - .github/workflows/mcp-drift-check.yml
   schedule:
     - cron: "37 2 * * *"   # daily 02:37 UTC / Beijing 10:37

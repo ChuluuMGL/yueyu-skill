@@ -21,6 +21,7 @@ on:
       - scripts/mcp_smoke_test.sh
       - scripts/check_manifest.sh
       - scripts/check_mcp_drift.py
+      - scripts/drift_terms.json
       - scripts/check_assets.py
       - scripts/qa.sh
       - .github/pull_request_template.md
@@ -43,6 +44,7 @@ on:
       - scripts/mcp_smoke_test.sh
       - scripts/check_manifest.sh
       - scripts/check_mcp_drift.py
+      - scripts/drift_terms.json
       - scripts/check_assets.py
       - scripts/qa.sh
       - .github/pull_request_template.md
