@@ -44,3 +44,4 @@ jobs:
         env:
           MCP_URL: https://www.yueyu.tech/mcp
           SKILL_JSON: skill.json
+          STRICT_SERVER_ANYOF: "1"

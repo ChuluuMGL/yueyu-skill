@@ -72,6 +72,8 @@ Use this when you only want the tools, without the Skill package's brand behavio
 }
 ```
 
+For step-by-step client setup, see [`docs/client-install.md`](docs/client-install.md).
+
 ---
 
 ## Recommended Prompts
@@ -152,10 +154,12 @@ yueyu-skill/
 ├── README.md / README.en.md    # Public docs
 ├── references/                 # Usage examples and sales consultation guidance
 ├── assets/                     # MCP config example and brand assets
-├── docs/release-checklist.md   # Release checklist
-├── scripts/                    # Manifest, smoke, and drift checks
+├── docs/                       # Client install guide and release checklist
+├── scripts/                    # Manifest, asset, smoke, drift, and one-shot QA checks
 ├── agents/openai.yaml          # OpenAI / Codex metadata
-└── .github/                    # CI workflows and issue templates
+├── .github/                    # CI workflows, issue templates, and PR template
+├── SECURITY.md
+└── CHANGELOG.md / CONTRIBUTING.md / LICENSE
 ```
 
 ## License

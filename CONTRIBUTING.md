@@ -12,18 +12,18 @@
 
 ## 提交前请确认
 
-1. 改动工具定义时，先跑：
+1. 改动工具定义、README、品牌图、CI 或发布材料时，先跑：
 
    ```bash
-   python3 scripts/check_mcp_drift.py
-   bash scripts/check_manifest.sh
-   bash scripts/mcp_smoke_test.sh
+   bash scripts/qa.sh
    ```
 
 2. 不要编造案例、客户数量、排名、效果承诺、合同条款或未经公开核验的数据。
 3. 写入类工具必须保留前置校验：`submit_lead` 需要姓名加电话或微信；订阅/退订需要明确接收地址。负向 smoke 必须确认缺失/非法参数不会被服务端接受。
 4. 如果版本号变化，必须同步 `skill.json`、`SKILL.md`、`README.md`、`README.en.md`、`agents/openai.yaml`，并在合并后同步 tag/release。
 5. 如果硬编码联系方式、办公地址、MCP URL 或公开关键事实发生变化，必须同步 README/SKILL/agents 元数据，并更新 `scripts/check_mcp_drift.py` 里的对应常量。
+6. 如果更新 `social-preview.png` 或 `assets/brand/yueyu-logo-wordmark.png`，必须先目视确认 logo 正确，再更新 `scripts/check_assets.py` 里的尺寸/哈希。
+7. 安全问题、个人信息暴露或密钥泄露不要开公开 issue，按 `SECURITY.md` 处理。
 
 ## 不接受的范围
 

@@ -4,6 +4,16 @@ yueyu-skill 版本演进。日期为首个发布该版本的提交日。
 
 ## [Unreleased]
 
+### QA 与维护
+- 新增 `scripts/check_assets.py`，固定校验 `social-preview.png` 与 canonical YUEYU 字标的尺寸和 SHA-256，避免 README 配图或 logo 回退
+- 新增 `scripts/qa.sh` 一键本地 QA，串联 manifest、资产、严格 drift 与 MCP smoke
+- `MCP Drift Check` workflow 开启 `STRICT_SERVER_ANYOF=1`，schema `anyOf` 漂移将阻断 CI
+- `CI` manifest job 增加资产校验，并扩大文档 / 模板 / 安全文件的触发路径
+
+### 文档与协作
+- 新增 PR 模板、`SECURITY.md` 和 `docs/client-install.md`
+- 发布清单与贡献指南改为引用一键 QA，并补充品牌图更新规则
+
 ## [0.2.6] — 2026-07-06
 
 ### QA 与发布体验

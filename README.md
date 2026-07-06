@@ -62,6 +62,8 @@
 
 不用克隆代码、不用装依赖——它是**在线 MCP 服务**，填个网址就能用。
 
+需要按客户端分步安装时，见 [`docs/client-install.md`](docs/client-install.md)。
+
 ---
 
 ## 推荐提问
@@ -196,13 +198,15 @@ yueyu-skill/
 ├── README.md / README.en.md    # 中英文公开文档
 ├── references/                 # 工具调用样例 + 销售顾问话术
 ├── assets/                     # MCP 配置示例 + 品牌资产
-├── docs/release-checklist.md   # 发布检查清单
+├── docs/                       # 客户端安装说明 + 发布检查清单
 ├── scripts/mcp_smoke_test.sh   # MCP 冒烟测试
 ├── scripts/check_manifest.sh   # 清单自检（版本一致 + 工具字段）
 ├── scripts/check_mcp_drift.py  # live MCP / skill 包漂移检查
+├── scripts/check_assets.py     # README / 社交预览 / logo 资产校验
+├── scripts/qa.sh               # 一键本地 QA
 ├── agents/openai.yaml          # OpenAI / Codex agent 元数据
 ├── .github/workflows/          # smoke + drift-check CI
-├── CHANGELOG.md · CONTRIBUTING.md · LICENSE
+├── CHANGELOG.md · CONTRIBUTING.md · SECURITY.md · LICENSE
 ```
 
 ## 相关 Skill

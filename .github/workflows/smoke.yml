@@ -12,12 +12,18 @@ on:
       - README.md
       - README.en.md
       - CHANGELOG.md
+      - CONTRIBUTING.md
+      - SECURITY.md
       - agents/openai.yaml
       - assets/**
+      - docs/**
       - references/**
       - scripts/mcp_smoke_test.sh
       - scripts/check_manifest.sh
       - scripts/check_mcp_drift.py
+      - scripts/check_assets.py
+      - scripts/qa.sh
+      - .github/pull_request_template.md
       - .github/ISSUE_TEMPLATE/**
       - .github/workflows/smoke.yml
       - .github/workflows/mcp-drift-check.yml
@@ -28,12 +34,18 @@ on:
       - README.md
       - README.en.md
       - CHANGELOG.md
+      - CONTRIBUTING.md
+      - SECURITY.md
       - agents/openai.yaml
       - assets/**
+      - docs/**
       - references/**
       - scripts/mcp_smoke_test.sh
       - scripts/check_manifest.sh
       - scripts/check_mcp_drift.py
+      - scripts/check_assets.py
+      - scripts/qa.sh
+      - .github/pull_request_template.md
       - .github/ISSUE_TEMPLATE/**
       - .github/workflows/smoke.yml
       - .github/workflows/mcp-drift-check.yml
@@ -53,3 +65,5 @@ jobs:
       - uses: actions/checkout@v7
       - name: Check skill manifest (versions + schema)
         run: bash scripts/check_manifest.sh
+      - name: Check public visual assets
+        run: python3 scripts/check_assets.py

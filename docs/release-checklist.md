@@ -20,16 +20,15 @@ Use this checklist for every `yueyu-skill` release.
 - Check README renders the intended `social-preview.png` image.
 - Confirm `assets/brand/yueyu-logo-wordmark.png` is still the correct YUEYU logo.
 - Do not substitute the legacy `月瑀营销 / MONSTO MKT` mark.
+- Run `python3 scripts/check_assets.py`. If the visual design was intentionally updated, review the rendered image first, then update the expected hashes in `scripts/check_assets.py`.
 
 ## 3. Run Local QA
 
 ```bash
-bash scripts/check_manifest.sh
-python3 scripts/check_mcp_drift.py
-bash scripts/mcp_smoke_test.sh
+bash scripts/qa.sh
 ```
 
-All three must pass before tagging.
+The full QA gate must pass before tagging.
 
 ## 4. Publish
 
