@@ -13,6 +13,11 @@ set -uo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SKILL_JSON="${SCRIPT_DIR}/../skill.json"
+EXPECTED_VERSION="$(python3 - "$SKILL_JSON" <<'PY'
+import json, sys
+print(json.load(open(sys.argv[1], encoding="utf-8")).get("version", ""))
+PY
+)"
 ENDPOINT="${1:-https://www.yueyu.tech/mcp}"
 PASS=0; FAIL=0; ID=0
 HEADERS="$(mktemp)"; LIST_FILE="$(mktemp)"
@@ -124,8 +129,13 @@ done
 ID=1
 ok "initialize" "$INIT"
 SESSION="$(grep -i '^mcp-session-id:' "$HEADERS" | tail -1 | tr -d '\r' | awk '{print $2}')"
-SVRVER="$(printf '%s' "$INIT" | grep -o '"version":"[^"]*"' | head -1)"
+SVRVER="$(printf '%s' "$INIT" | grep -o '"version":"[^"]*"' | head -1 | sed 's/^"version":"//;s/"$//')"
 printf '  · session=%s  serverInfo=%s\n' "${SESSION:-（无）}" "${SVRVER:-?}"
+if [ "$SVRVER" = "$EXPECTED_VERSION" ]; then
+  printf '  ✓ serverInfo.version matches skill.json (%s)\n' "$EXPECTED_VERSION"; PASS=$((PASS+1))
+else
+  printf '  ✗ serverInfo.version drift: server=%s skill.json=%s\n' "${SVRVER:-?}" "$EXPECTED_VERSION"; FAIL=$((FAIL+1))
+fi
 
 # 2) tools/list —— 与 skill.json 精确比对工具集合（工具名单一来源：skill.json）
 printf '[2/4] tools/list\n'

@@ -9,14 +9,14 @@
 
 [![AI Skill](https://img.shields.io/badge/AI%20Skill-yueyu--skill-0E5E43)](https://github.com/ChuluuMGL/yueyu-skill)
 [![MCP](https://img.shields.io/badge/Protocol-MCP-blue)](https://modelcontextprotocol.io/)
-[![Version](https://img.shields.io/badge/version-0.2.5-green)](https://github.com/ChuluuMGL/yueyu-skill/releases)
+[![Version](https://img.shields.io/badge/version-0.2.6-green)](https://github.com/ChuluuMGL/yueyu-skill/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow)](https://opensource.org/licenses/MIT)
 [![Endpoint](https://img.shields.io/website?url=https%3A%2F%2Fwww.yueyu.tech%2Fmcp&label=MCP%20Endpoint)](https://www.yueyu.tech/mcp)
 [![Drift Check](https://github.com/ChuluuMGL/yueyu-skill/actions/workflows/mcp-drift-check.yml/badge.svg)](https://github.com/ChuluuMGL/yueyu-skill/actions/workflows/mcp-drift-check.yml)
 
 ---
 
-> Current stable version: `v0.2.5` (GitHub Release). The `main` branch tracks the latest validated package; each version bump should be tagged and released so source and install pages stay aligned.
+> Current stable version: `v0.2.6` (GitHub Release). The `main` branch tracks the latest validated package; each version bump should be tagged and released so source and install pages stay aligned.
 
 ## What This Skill Does
 
@@ -139,7 +139,7 @@ Before collecting contact details, the assistant must tell the user that the inf
 | Protocol | MCP (Model Context Protocol) |
 | Transport | Streamable HTTP |
 | Endpoint | `POST https://www.yueyu.tech/mcp` |
-| Version | 0.2.5 |
+| Version | 0.2.6 |
 | Tools | 9 |
 | Contract check | [drift-check CI](https://github.com/ChuluuMGL/yueyu-skill/actions/workflows/mcp-drift-check.yml): tools, schemas, annotations, canonical payload terms, contact facts, safe write-tool smoke tests, and versions |
 
@@ -151,7 +151,8 @@ yueyu-skill/
 ├── skill.json                  # Machine-readable tool definitions
 ├── README.md / README.en.md    # Public docs
 ├── references/                 # Usage examples and sales consultation guidance
-├── assets/mcp-config-example.json
+├── assets/                     # MCP config example and brand assets
+├── docs/release-checklist.md   # Release checklist
 ├── scripts/                    # Manifest, smoke, and drift checks
 ├── agents/openai.yaml          # OpenAI / Codex metadata
 └── .github/                    # CI workflows and issue templates

@@ -2,7 +2,7 @@
 # Mirrors skill.json so an OpenAI/Codex consumer can discover the MCP endpoint,
 # tool inventory, version, and write-tool guardrails without opening skill.json.
 
-version: 0.2.5
+version: 0.2.6
 display_name: "月瑀科技营销服务查询"
 short_description: "实时查询月瑀科技的小红书代运营、达人投放、信息流广告、线索转化和营销复盘服务，支持提交合作线索（MCP）。"
 default_prompt: "Use $yueyu-skill to answer questions about 月瑀科技 / YUEYU TECH: company info, service lines, methodology, AI tools, latest reports, and contact details. For partnership intent, collect name plus phone or wechat before calling submit_lead."

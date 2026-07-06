@@ -14,7 +14,8 @@ Hard-fails when:
     name plus phone-or-wechat;
   - safe smoke tests show write handlers accepting incomplete leads, invalid
     subscription channels, or missing unsubscribe addresses;
-  - version strings drift across skill.json / SKILL.md / README / agents/openai.yaml.
+  - version strings drift across skill.json / SKILL.md / README / agents/openai.yaml
+    or the live MCP serverInfo.version.
 
 The live server may lag local-only JSON Schema refinements such as anyOf until
 the website backend is deployed. That mismatch is reported as a warning by
@@ -31,6 +32,7 @@ MCP_URL = os.environ.get("MCP_URL", "https://www.yueyu.tech/mcp")
 SKILL_JSON = os.environ.get("SKILL_JSON", "skill.json")
 STRICT_SERVER_ANYOF = os.environ.get("STRICT_SERVER_ANYOF") == "1"
 TIMEOUT = 20
+SERVER_INFO_VERSION = None
 
 READ_ONLY_TOOLS = [
     "get_company_info",
@@ -105,7 +107,8 @@ def rpc(method, params=None, rid=1):
 
 
 def server_tools():
-    rpc(
+    global SERVER_INFO_VERSION
+    init = rpc(
         "initialize",
         {
             "protocolVersion": "2025-03-26",
@@ -114,6 +117,7 @@ def server_tools():
         },
         1,
     )
+    SERVER_INFO_VERSION = (((init.get("result") or {}).get("serverInfo") or {}).get("version"))
     data = rpc("tools/list", {}, 2)
     if "error" in data:
         sys.exit(f"FATAL: tools/list returned an error: {data['error']}")
@@ -271,6 +275,8 @@ def check_contact():
 def check_versions(doc):
     errors = []
     version = doc.get("version")
+    if SERVER_INFO_VERSION != version:
+        errors.append(f"  ✗ version drift: live MCP serverInfo.version has {SERVER_INFO_VERSION!r}; skill.json has {version!r}")
     checks = [
         ("SKILL.md", r"(?m)^version:\s*([^\s]+)"),
         ("README.md badge", r"badge/version-([^\s)-]+)-green"),

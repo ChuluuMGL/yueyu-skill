@@ -10,7 +10,7 @@
 
 [![AI Skill](https://img.shields.io/badge/AI%20Skill-yueyu--skill-0E5E43)](https://github.com/ChuluuMGL/yueyu-skill)
 [![MCP](https://img.shields.io/badge/Protocol-MCP-blue)](https://modelcontextprotocol.io/)
-[![Version](https://img.shields.io/badge/version-0.2.5-green)](https://github.com/ChuluuMGL/yueyu-skill/releases)
+[![Version](https://img.shields.io/badge/version-0.2.6-green)](https://github.com/ChuluuMGL/yueyu-skill/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow)](https://opensource.org/licenses/MIT)
 [![Endpoint](https://img.shields.io/website?url=https%3A%2F%2Fwww.yueyu.tech%2Fmcp&label=MCP%20Endpoint)](https://www.yueyu.tech/mcp)
 [![Drift Check](https://github.com/ChuluuMGL/yueyu-skill/actions/workflows/mcp-drift-check.yml/badge.svg)](https://github.com/ChuluuMGL/yueyu-skill/actions/workflows/mcp-drift-check.yml)
@@ -19,7 +19,7 @@
 
 ---
 
-> 当前稳定版：`v0.2.5`（GitHub Release）。`main` 分支保持为最新已校验代码；每次版本号更新后同步打 tag/release，避免安装页与源码版本脱节。
+> 当前稳定版：`v0.2.6`（GitHub Release）。`main` 分支保持为最新已校验代码；每次版本号更新后同步打 tag/release，避免安装页与源码版本脱节。
 
 ## 装上能干嘛
 
@@ -184,7 +184,7 @@ git clone https://github.com/ChuluuMGL/yueyu-skill.git \
 | 端点 | `POST https://www.yueyu.tech/mcp` |
 | 部署 | 阿里云 ECS（杭州） |
 | 后端 | Express.js（复用官网 API） |
-| 版本 | 0.2.5 |
+| 版本 | 0.2.6 |
 | 契约校验 | [drift-check CI](https://github.com/ChuluuMGL/yueyu-skill/actions/workflows/mcp-drift-check.yml)：工具名/schema/annotations、payload 关键事实、联系方式、写入类负向 smoke、版本一致性 |
 
 ## 目录结构
@@ -195,7 +195,8 @@ yueyu-skill/
 ├── skill.json                  # 机器可读配置（工具定义 / 品牌调性）
 ├── README.md / README.en.md    # 中英文公开文档
 ├── references/                 # 工具调用样例 + 销售顾问话术
-├── assets/mcp-config-example.json
+├── assets/                     # MCP 配置示例 + 品牌资产
+├── docs/release-checklist.md   # 发布检查清单
 ├── scripts/mcp_smoke_test.sh   # MCP 冒烟测试
 ├── scripts/check_manifest.sh   # 清单自检（版本一致 + 工具字段）
 ├── scripts/check_mcp_drift.py  # live MCP / skill 包漂移检查

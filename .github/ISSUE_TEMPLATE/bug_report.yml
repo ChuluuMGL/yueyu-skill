@@ -48,4 +48,4 @@ body:
     id: version
     attributes:
       label: Skill 版本
-      placeholder: "0.2.5"
+      placeholder: "0.2.6"

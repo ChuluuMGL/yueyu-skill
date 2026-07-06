@@ -4,7 +4,13 @@ yueyu-skill 版本演进。日期为首个发布该版本的提交日。
 
 ## [Unreleased]
 
+## [0.2.6] — 2026-07-06
+
 ### QA 与发布体验
+- actions/checkout 升级到 `v7`，消除 Node 20 deprecation annotation；`smoke.yml` 移除每日重复线上 smoke，保留手动完整 smoke 与 push/PR manifest，降低 live MCP 429 风险
+- 新增 `assets/brand/yueyu-logo-wordmark.png` 与品牌资产说明，明确 `YUEYU` 字标为本 skill 的正确 logo，避免误用旧 `月瑀营销 / MONSTO MKT` 标识
+- 新增 `docs/release-checklist.md`，固化版本、QA、tag/release、README 图和 live MCP serverInfo 的发布流程
+- drift/smoke 将 live MCP `serverInfo.version` 纳入版本一致性检查，防止 package 版本与线上端点脱节
 - 漂移检查补充联系方式一致性校验：线上 `get_contact_info`、README/SKILL 文档中的电话、邮箱和地址标记必须保持同步
 - 漂移检查与冒烟测试新增写入类负向 smoke：`submit_lead` 缺手机号/微信、`subscribe_reports` 非法渠道、`unsubscribe_reports` 缺地址时必须被服务端拒绝
 - `check_manifest.sh` 纳入英文 README 版本一致性与 `assets/mcp-config-example.json` MCP URL 校验
