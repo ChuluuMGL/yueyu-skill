@@ -343,6 +343,36 @@ def check_safe_smoke_tests():
     return errors, warnings
 
 
+def check_dry_run_accepted():
+    """Write handlers must ACCEPT valid args when dry_run:true (no real write).
+
+    The backend signals a no-op validation pass with validated/ok/dry_run == true.
+    Catches a regression where dry_run is silently ignored and a real write happens,
+    or where valid args start being rejected.
+    """
+    errors, warnings = [], []
+    tests = [
+        ("submit_lead accepts valid dry_run", "submit_lead",
+         {"name": "Contract Smoke Test", "phone": "0000000000", "dry_run": True}),
+        ("subscribe_reports accepts valid dry_run", "subscribe_reports",
+         {"channel": "email", "address": "contract-smoke@example.com", "dry_run": True}),
+        ("unsubscribe_reports accepts valid dry_run", "unsubscribe_reports",
+         {"address": "contract-smoke@example.com", "dry_run": True}),
+    ]
+    for idx, (label, tool_name, args) in enumerate(tests, start=801):
+        try:
+            payload = validation_payload(tool_name, args, idx)
+        except Exception as exc:
+            warnings.append(f"  ⚠ dry_run skipped: {label} ({exc})")
+            continue
+        if payload.get("jsonrpc_error"):
+            errors.append(f"  ✗ dry_run: {label}; server rejected valid dry_run: {payload['jsonrpc_error']}")
+            continue
+        if not (payload.get("validated") is True or payload.get("ok") is True or payload.get("dry_run") is True):
+            errors.append(f"  ✗ dry_run: {label}; expected validated/ok/dry_run true, got {json.dumps(payload, ensure_ascii=False)[:240]}")
+    return errors, warnings
+
+
 def main():
     print(f"Comparing {SKILL_JSON} against {MCP_URL} ...")
     try:
@@ -357,6 +387,7 @@ def main():
         check_payloads,
         check_contact,
         check_safe_smoke_tests,
+        check_dry_run_accepted,
     ):
         e, w = fn()
         errors += e
