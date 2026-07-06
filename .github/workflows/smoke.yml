@@ -14,11 +14,15 @@ on:
       - skill.json
       - SKILL.md
       - README.md
+      - README.en.md
       - CHANGELOG.md
       - agents/openai.yaml
+      - assets/**
+      - references/**
       - scripts/mcp_smoke_test.sh
       - scripts/check_manifest.sh
       - scripts/check_mcp_drift.py
+      - .github/ISSUE_TEMPLATE/**
       - .github/workflows/smoke.yml
       - .github/workflows/mcp-drift-check.yml
   pull_request:
@@ -26,11 +30,15 @@ on:
       - skill.json
       - SKILL.md
       - README.md
+      - README.en.md
       - CHANGELOG.md
       - agents/openai.yaml
+      - assets/**
+      - references/**
       - scripts/mcp_smoke_test.sh
       - scripts/check_manifest.sh
       - scripts/check_mcp_drift.py
+      - .github/ISSUE_TEMPLATE/**
       - .github/workflows/smoke.yml
       - .github/workflows/mcp-drift-check.yml
 

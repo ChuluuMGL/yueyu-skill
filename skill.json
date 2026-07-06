@@ -41,6 +41,22 @@
     "transport": "streamable-http",
     "url": "https://www.yueyu.tech/mcp"
   },
+  "compatibility": {
+    "mcp_clients": [
+      "Claude Code",
+      "Cursor",
+      "Cline",
+      "Continue",
+      "Codex / OpenAI coding agent",
+      "Any MCP-compatible client (Streamable HTTP)"
+    ],
+    "install_targets": {
+      "claude_code": ".claude/skills/yueyu-skill/",
+      "cursor": ".cursor/skills/yueyu-skill/",
+      "openai_codex": ".agents/skills/yueyu-skill/",
+      "generic_mcp": "Use assets/mcp-config-example.json"
+    }
+  },
   "tools": [
     {
       "name": "get_company_info",

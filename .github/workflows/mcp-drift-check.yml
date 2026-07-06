@@ -10,8 +10,11 @@ on:
       - skill.json
       - SKILL.md
       - README.md
+      - README.en.md
       - CHANGELOG.md
       - agents/openai.yaml
+      - assets/**
+      - references/**
       - scripts/check_mcp_drift.py
       - .github/workflows/mcp-drift-check.yml
   pull_request:
@@ -20,8 +23,11 @@ on:
       - skill.json
       - SKILL.md
       - README.md
+      - README.en.md
       - CHANGELOG.md
       - agents/openai.yaml
+      - assets/**
+      - references/**
       - scripts/check_mcp_drift.py
       - .github/workflows/mcp-drift-check.yml
   schedule:

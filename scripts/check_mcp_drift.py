@@ -9,8 +9,11 @@ Hard-fails when:
   - canonical facts go missing from read-only payloads (e.g. the high-tech
     enterprise record number, the 5 service-line names, product names) — i.e.
     the server must return correct content, not merely non-banned content;
+  - canonical contact strings drift between README/SKILL docs and live MCP data;
   - local package contracts regress, especially submit_lead requiring
     name plus phone-or-wechat;
+  - safe smoke tests show write handlers accepting incomplete leads, invalid
+    subscription channels, or missing unsubscribe addresses;
   - version strings drift across skill.json / SKILL.md / README / agents/openai.yaml.
 
 The live server may lag local-only JSON Schema refinements such as anyOf until
@@ -59,6 +62,18 @@ REQUIRED_TERMS = {
     "get_latest_reports": ["reports"],
 }
 
+EXPECTED_CONTACT = {
+    "phone": "+86 186-1155-3805",
+    "email": "chuluu@yueyutech.cn",
+    # The current live endpoint exposes the city/district only; README/SKILL carry
+    # the full office address. Keep these separate so either surface can evolve
+    # intentionally without silently diverging.
+    "live_address_contains": "杭州市萧山区",
+    "doc_address_contains": "萧山区农业大厦",
+}
+
+CONTACT_DOC_FILES = ["README.md", "README.en.md", "SKILL.md"]
+
 
 def read(path):
     with open(path, encoding="utf-8") as f:
@@ -73,7 +88,7 @@ def rpc(method, params=None, rid=1):
         "Accept": "application/json, text/event-stream",
     }
     last_exc = None
-    for _ in range(3):
+    for attempt in range(5):
         try:
             req = urllib.request.Request(MCP_URL, data=body, headers=headers, method="POST")
             with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
@@ -83,7 +98,7 @@ def rpc(method, params=None, rid=1):
                 return json.loads(blob)
         except Exception as exc:
             last_exc = exc
-        time.sleep(1)
+        time.sleep(min(2 ** attempt, 8))
     if last_exc:
         raise last_exc
     raise RuntimeError("empty MCP response after 3 attempts")
@@ -127,6 +142,31 @@ def call_tool(name):
     if "error" in data:
         raise RuntimeError(data["error"])
     return data
+
+
+def call_tool_with_args(name, arguments=None, rid=500):
+    data = rpc("tools/call", {"name": name, "arguments": arguments or {}}, rid)
+    if "error" in data:
+        raise RuntimeError(data["error"])
+    return data
+
+
+def tool_payload(data):
+    try:
+        text = data["result"]["content"][0].get("text", "")
+    except Exception as exc:
+        raise RuntimeError(f"unexpected tool response shape: {exc}") from exc
+    try:
+        return json.loads(text)
+    except Exception as exc:
+        raise RuntimeError(f"tool response is not JSON: {text[:200]!r}") from exc
+
+
+def validation_payload(name, arguments=None, rid=500):
+    data = rpc("tools/call", {"name": name, "arguments": arguments or {}}, rid)
+    if "error" in data:
+        return {"success": False, "jsonrpc_error": data["error"]}
+    return tool_payload(data)
 
 
 def check_schema(local_tools, remote_tools):
@@ -192,6 +232,42 @@ def check_payloads():
     return errors, warnings
 
 
+def check_contact():
+    errors, warnings = [], []
+    try:
+        payload = tool_payload(call_tool_with_args("get_contact_info", {}, 601))
+    except Exception as exc:
+        warnings.append(f"  ⚠ contact spot-check skipped: get_contact_info unusable ({exc})")
+        return errors, warnings
+
+    phone = (payload.get("phone") or "").strip()
+    email = (payload.get("email") or "").strip()
+    address = (payload.get("address") or "").strip()
+    if phone != EXPECTED_CONTACT["phone"]:
+        errors.append(f"  ✗ contact drift: server phone {phone!r} ≠ {EXPECTED_CONTACT['phone']!r}")
+    if email != EXPECTED_CONTACT["email"]:
+        errors.append(f"  ✗ contact drift: server email {email!r} ≠ {EXPECTED_CONTACT['email']!r}")
+    if EXPECTED_CONTACT["live_address_contains"] not in address:
+        errors.append(
+            f"  ✗ contact drift: server address {address!r} missing {EXPECTED_CONTACT['live_address_contains']!r}"
+        )
+
+    for path in CONTACT_DOC_FILES:
+        if not os.path.exists(path):
+            continue
+        text = read(path)
+        for key in ("phone", "email"):
+            expected = EXPECTED_CONTACT[key]
+            if expected not in text:
+                errors.append(f"  ✗ contact drift: {path} missing {expected!r}")
+    for path in ("README.md", "README.en.md"):
+        if os.path.exists(path) and EXPECTED_CONTACT["doc_address_contains"] not in read(path):
+            errors.append(
+                f"  ✗ contact drift: {path} missing office address marker {EXPECTED_CONTACT['doc_address_contains']!r}"
+            )
+    return errors, warnings
+
+
 def check_versions(doc):
     errors = []
     version = doc.get("version")
@@ -210,6 +286,16 @@ def check_versions(doc):
             errors.append(f"  ✗ version drift: {label} has {found!r}; skill.json has {version!r}")
     if f"v{version}" not in read("README.md"):
         errors.append(f"  ✗ README.md must mention stable release v{version}")
+    if os.path.exists("README.en.md"):
+        en = read("README.en.md")
+        en_badge = re.search(r"badge/version-([^\s)-]+)-green", en)
+        en_table = re.search(r"\|\s*Version\s*\|\s*([0-9]+\.[0-9]+\.[0-9]+)", en)
+        if (en_badge.group(1) if en_badge else None) != version:
+            errors.append(f"  ✗ version drift: README.en.md badge has {(en_badge.group(1) if en_badge else None)!r}; skill.json has {version!r}")
+        if (en_table.group(1) if en_table else None) != version:
+            errors.append(f"  ✗ version drift: README.en.md table has {(en_table.group(1) if en_table else None)!r}; skill.json has {version!r}")
+        if f"v{version}" not in en:
+            errors.append(f"  ✗ README.en.md must mention stable release v{version}")
     return errors
 
 
@@ -233,6 +319,24 @@ def check_local_contracts(local_tools):
     return errors
 
 
+def check_safe_smoke_tests():
+    errors, warnings = [], []
+    tests = [
+        ("submit_lead rejects missing phone/wechat", "submit_lead", {"name": "Contract Smoke Test"}),
+        ("subscribe_reports rejects invalid channel", "subscribe_reports", {"channel": "sms", "address": "contract-smoke@example.com"}),
+        ("unsubscribe_reports rejects missing address", "unsubscribe_reports", {}),
+    ]
+    for idx, (label, tool_name, args) in enumerate(tests, start=701):
+        try:
+            payload = validation_payload(tool_name, args, idx)
+        except Exception as exc:
+            warnings.append(f"  ⚠ smoke skipped: {label} ({exc})")
+            continue
+        if payload.get("success") is not False:
+            errors.append(f"  ✗ smoke: {label}; payload={json.dumps(payload, ensure_ascii=False)[:240]}")
+    return errors, warnings
+
+
 def main():
     print(f"Comparing {SKILL_JSON} against {MCP_URL} ...")
     try:
@@ -245,6 +349,8 @@ def main():
     for fn in (
         lambda: check_schema(local, remote),
         check_payloads,
+        check_contact,
+        check_safe_smoke_tests,
     ):
         e, w = fn()
         errors += e
@@ -261,7 +367,7 @@ def main():
             print(error)
         print("\nFix: update skill.json/SKILL.md/README/agents metadata or deploy the website MCP backend to match.")
         sys.exit(1)
-    print("\n✓ No blocking drift — tools, schemas, annotations, payload guardrails (blocked + canonical terms), versions, and local contracts are consistent.")
+    print("\n✓ No blocking drift — tools, schemas, annotations, payload guardrails, contact facts, safe smoke tests, versions, and local contracts are consistent.")
     if warnings:
         print(f"  ({len(warnings)} non-fatal warning(s) listed above)")
 

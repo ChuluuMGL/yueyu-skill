@@ -2,6 +2,18 @@
 
 yueyu-skill 版本演进。日期为首个发布该版本的提交日。
 
+## [Unreleased]
+
+### QA 与发布体验
+- 漂移检查补充联系方式一致性校验：线上 `get_contact_info`、README/SKILL 文档中的电话、邮箱和地址标记必须保持同步
+- 漂移检查与冒烟测试新增写入类负向 smoke：`submit_lead` 缺手机号/微信、`subscribe_reports` 非法渠道、`unsubscribe_reports` 缺地址时必须被服务端拒绝
+- `check_manifest.sh` 纳入英文 README 版本一致性与 `assets/mcp-config-example.json` MCP URL 校验
+
+### 文档与安装
+- 新增 `README.en.md`、`assets/mcp-config-example.json`、`.github/ISSUE_TEMPLATE/config.yml`
+- 新增 `references/usage-examples.md` 与 `references/sales-consultation.md`，将长示例和销售顾问话术从常驻 `SKILL.md` 拆分为按需加载资料
+- README 补齐推荐提问、兼容客户端矩阵和 references/assets 目录说明
+
 ## [0.2.5] — 2026-07-03
 
 ### 测试加固

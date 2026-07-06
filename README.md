@@ -6,6 +6,8 @@
 
 ![月瑀科技 AI Skill](social-preview.png?v=20260706-yueyu-logo)
 
+**中文** | [English](README.en.md)
+
 [![AI Skill](https://img.shields.io/badge/AI%20Skill-yueyu--skill-0E5E43)](https://github.com/ChuluuMGL/yueyu-skill)
 [![MCP](https://img.shields.io/badge/Protocol-MCP-blue)](https://modelcontextprotocol.io/)
 [![Version](https://img.shields.io/badge/version-0.2.5-green)](https://github.com/ChuluuMGL/yueyu-skill/releases)
@@ -39,7 +41,7 @@
 
 ## 30 秒试用
 
-**第 1 步：** 把这一段加进你的 MCP 客户端配置（Claude Desktop / Cursor / Cline / Continue 等通用客户端都适用）：
+**第 1 步：** 把这一段加进你的 MCP 客户端配置（Claude Desktop / Cursor / Cline / Continue 等通用客户端都适用；也可直接复制 [`assets/mcp-config-example.json`](assets/mcp-config-example.json)）：
 
 ```json
 {
@@ -59,6 +61,30 @@
 > **AI：** *（实时调用月瑀 MCP 服务）* 月瑀科技是杭州的国家高新技术企业（备案 GR202533012042），专注账号营销、小红书达人投放、信息流广告、线索转化与营销复盘。达人投放按「需求拆解 → 筛选 → Brief → 审核 → 排期 → 预算 → 结案复盘」交付，重点不在单篇爆文，而在可复盘的整条链路……
 
 不用克隆代码、不用装依赖——它是**在线 MCP 服务**，填个网址就能用。
+
+---
+
+## 推荐提问
+
+**公司 / 服务速览**
+```text
+用 yueyu-skill 介绍一下月瑀科技，并说明它的小红书营销服务边界。
+```
+
+**达人投放验收**
+```text
+用 yueyu-skill 说明小红书达人投放应该怎么验收，不要只看发布数量。
+```
+
+**方法论**
+```text
+用 yueyu-skill 解释月瑀的 4I 营销飞轮，并结合账号营销举例。
+```
+
+**留资合作**
+```text
+我叫张三，微信 zhang-demo，想咨询小红书达人投放。用 yueyu-skill 把我的需求提交给商务团队。
+```
 
 ---
 
@@ -109,8 +135,16 @@
 
 | 你的客户端 | 接入方式 |
 |---|---|
-| Claude Desktop / Cursor / Cline / Continue 等通用 MCP 客户端 | 用上面的 `mcpServers` URL 配置即可，**无需克隆** |
-| 需要本地 skill 文件夹的客户端 | `git clone https://github.com/ChuluuMGL/yueyu-skill.git .claude/skills/yueyu-skill`（或对应 IDE 目录） |
+| Claude Code | `.claude/skills/yueyu-skill/`（安装 Skill 包） |
+| Cursor | `.cursor/skills/yueyu-skill/` 或 MCP 配置 |
+| Cline / Continue | MCP 配置 |
+| Codex / OpenAI | `.agents/skills/yueyu-skill/`（配合 `agents/openai.yaml`） |
+| 通用 MCP 客户端 | 用上面的 `mcpServers` URL 配置，**无需克隆** |
+
+```bash
+git clone https://github.com/ChuluuMGL/yueyu-skill.git \
+  .claude/skills/yueyu-skill
+```
 
 **商务**：+86 186-1155-3805（微信同号 178 8790 0622）· chuluu@yueyutech.cn · 杭州萧山区农业大厦 1 座 2005 室
 **关注月瑀**：[小红书](https://www.xiaohongshu.com/user/profile/6706447e000000001d031a68) · [抖音](https://www.douyin.com/user/MS4wLjABAAAAEHnj91dHGmeatPJBSawvaS0PSwaaesRqkUyPGj37GnA) · [官网](https://www.yueyu.tech/)
@@ -151,6 +185,7 @@
 | 部署 | 阿里云 ECS（杭州） |
 | 后端 | Express.js（复用官网 API） |
 | 版本 | 0.2.5 |
+| 契约校验 | [drift-check CI](https://github.com/ChuluuMGL/yueyu-skill/actions/workflows/mcp-drift-check.yml)：工具名/schema/annotations、payload 关键事实、联系方式、写入类负向 smoke、版本一致性 |
 
 ## 目录结构
 
@@ -158,12 +193,15 @@
 yueyu-skill/
 ├── SKILL.md                    # 元数据 + Agent 指令
 ├── skill.json                  # 机器可读配置（工具定义 / 品牌调性）
+├── README.md / README.en.md    # 中英文公开文档
+├── references/                 # 工具调用样例 + 销售顾问话术
+├── assets/mcp-config-example.json
 ├── scripts/mcp_smoke_test.sh   # MCP 冒烟测试
 ├── scripts/check_manifest.sh   # 清单自检（版本一致 + 工具字段）
 ├── scripts/check_mcp_drift.py  # live MCP / skill 包漂移检查
 ├── agents/openai.yaml          # OpenAI / Codex agent 元数据
 ├── .github/workflows/          # smoke + drift-check CI
-├── README.md · CHANGELOG.md · LICENSE
+├── CHANGELOG.md · CONTRIBUTING.md · LICENSE
 ```
 
 ## 相关 Skill

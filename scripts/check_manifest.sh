@@ -2,7 +2,8 @@
 # yueyu-skill 清单静态自检（不联网、无副作用）
 # 校验：1) skill.json / SKILL.md / README 徽章与表格 版本号一致；
 #       2) 每个工具具备 name/description/inputSchema 及 4 个 MCP 注解，且工具名不重复；
-#       3) 写入类关键合同（submit_lead / subscribe_reports）保持机器可读。
+#       3) 写入类关键合同（submit_lead / subscribe_reports）保持机器可读；
+#       4) 可复制 MCP 配置示例与 skill.json 的远程端点一致。
 # 用法： bash scripts/check_manifest.sh
 # 退出码：0 通过；非 0 有失败。
 set -uo pipefail
@@ -40,6 +41,20 @@ for label, v in [("SKILL.md", v_skill), ("README徽章", v_badge), ("README表�
         errors.append("读不到 %s 的版本号" % label)
     elif v != v_json:
         errors.append("版本不一致：%s=%s ≠ skill.json=%s" % (label, v, v_json))
+
+readme_en_path = os.path.join(root, "README.en.md")
+if os.path.exists(readme_en_path):
+    readme_en = open(readme_en_path, encoding="utf-8").read()
+    m_en_badge = re.search(r"badge/version-(\d+\.\d+\.\d+)", readme_en)
+    m_en_table = re.search(r"\|\s*Version\s*\|\s*(\d+\.\d+\.\d+)", readme_en)
+    for label, v in [
+        ("README.en徽章", m_en_badge.group(1) if m_en_badge else None),
+        ("README.en表格", m_en_table.group(1) if m_en_table else None),
+    ]:
+        if v is None:
+            errors.append("读不到 %s 的版本号" % label)
+        elif v != v_json:
+            errors.append("版本不一致：%s=%s ≠ skill.json=%s" % (label, v, v_json))
 
 # 2) 工具字段 / 注解齐全
 HINTS = ["readOnlyHint", "destructiveHint", "idempotentHint", "openWorldHint"]
@@ -86,6 +101,20 @@ if set(channel.get("enum") or []) != {"email", "wechat", "webhook"}:
 m_agent = re.search(r"(?m)^version:\s*([^\s]+)", agent_meta)
 if agent_meta and (not m_agent or m_agent.group(1) != v_json):
     errors.append("agents/openai.yaml：version 必须与 skill.json 一致")
+
+mcp_url = ((skill.get("mcp_server") or {}).get("url") or "").strip()
+config_path = os.path.join(root, "assets", "mcp-config-example.json")
+if os.path.exists(config_path):
+    try:
+        cfg = json.load(open(config_path, encoding="utf-8"))
+        cfg_url = ((cfg.get("mcpServers") or {}).get("yueyu-skill") or {}).get("url")
+        cfg_type = ((cfg.get("mcpServers") or {}).get("yueyu-skill") or {}).get("type")
+        if cfg_url != mcp_url:
+            errors.append("assets/mcp-config-example.json：url 与 skill.json mcp_server.url 不一致")
+        if cfg_type != "streamable-http":
+            errors.append("assets/mcp-config-example.json：type 必须为 streamable-http")
+    except Exception as exc:
+        errors.append("assets/mcp-config-example.json：无法解析 JSON：%s" % exc)
 
 if errors:
     print("\n✗ 清单自检失败：")

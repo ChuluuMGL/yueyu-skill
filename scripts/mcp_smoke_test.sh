@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # yueyu-skill MCP 冒烟测试
-# 验证：端点可达、initialize 成功、tools/list 工具集合与 skill.json 完全一致、各只读工具返回非错误。
+# 验证：端点可达、initialize 成功、tools/list 工具集合与 skill.json 完全一致、各只读工具返回非错误、
+#       写入类工具拒绝缺失/非法参数。
 # 同时阻断旧品牌/旧服务结构回流，避免 CI 绿灯但日志里藏着漂移告警。
 # 用法： bash scripts/mcp_smoke_test.sh [endpoint]
 # 退出码：0 全过；非 0 有失败。
@@ -50,6 +51,11 @@ call_tool () {  # call_tool <tool-name> —— 只传工具名，body 花括号�
   raw "{\"jsonrpc\":\"2.0\",\"id\":${ID},\"method\":\"tools/call\",\"params\":{\"name\":\"$1\",\"arguments\":{}}}"
 }
 
+call_tool_args () {  # call_tool_args <tool-name> <json-args> —— json-args 必须是完整 JSON object
+  ID=$((ID+1))
+  raw "{\"jsonrpc\":\"2.0\",\"id\":${ID},\"method\":\"tools/call\",\"params\":{\"name\":\"$1\",\"arguments\":$2}}"
+}
+
 scan_drift () {  # scan_drift <tool> <body-file> —— payload 内容漂移扫描（阻塞）
   python3 - "$1" "$2" <<'PY'
 import sys
@@ -71,10 +77,43 @@ if hits:
 PY
 }
 
+assert_rejected () {  # assert_rejected <label> <body> —— success:false 或 JSON-RPC error 都算正确拒绝
+  local label="$1" body="$2"
+  printf '%s' "$body" > "$LIST_FILE"
+  if python3 - "$label" "$LIST_FILE" <<'PY'; then
+import json, sys
+label, path = sys.argv[1], sys.argv[2]
+raw = open(path, encoding="utf-8").read()
+blob = "".join(line[5:].strip() for line in raw.splitlines() if line.strip().startswith("data:")) or raw
+try:
+    data = json.loads(blob)
+except Exception as exc:
+    print(f"  ✗ {label}: cannot parse response: {exc}")
+    sys.exit(1)
+if "error" in data:
+    sys.exit(0)
+try:
+    text = data["result"]["content"][0].get("text", "")
+    payload = json.loads(text)
+except Exception as exc:
+    print(f"  ✗ {label}: unexpected response shape: {exc}")
+    sys.exit(1)
+if payload.get("success") is False:
+    sys.exit(0)
+print(f"  ✗ {label}: expected rejection, got {json.dumps(payload, ensure_ascii=False)[:240]}")
+sys.exit(1)
+PY
+    printf '  ✓ %s\n' "$label"; PASS=$((PASS+1))
+  else
+    printf '    %s\n' "$(printf '%s' "$body" | tr -d '\n' | head -c 300)"
+    FAIL=$((FAIL+1))
+  fi
+}
+
 printf 'Endpoint: %s\n' "$ENDPOINT"
 
 # 1) initialize（-D 抓 Mcp-Session-Id；空响应重试）
-printf '[1/3] initialize\n'
+printf '[1/4] initialize\n'
 for _ in 1 2 3; do
   INIT="$(curl -s -m 20 -D "$HEADERS" -X POST "$ENDPOINT" \
     -H "Content-Type: application/json" -H "Accept: application/json, text/event-stream" \
@@ -89,7 +128,7 @@ SVRVER="$(printf '%s' "$INIT" | grep -o '"version":"[^"]*"' | head -1)"
 printf '  · session=%s  serverInfo=%s\n' "${SESSION:-（无）}" "${SVRVER:-?}"
 
 # 2) tools/list —— 与 skill.json 精确比对工具集合（工具名单一来源：skill.json）
-printf '[2/3] tools/list\n'
+printf '[2/4] tools/list\n'
 LIST=$(rpc tools/list)
 ok "tools/list" "$LIST"
 printf '%s' "$LIST" > "$LIST_FILE"
@@ -145,7 +184,7 @@ if hits:
 PY
 
 # 3) 只读工具逐个（顺带做 payload 内容漂移扫描，发现旧内容即失败）
-printf '[3/3] 只读工具\n'
+printf '[3/4] 只读工具\n'
 for t in get_company_info get_service_lines get_methodology get_products get_latest_reports get_contact_info; do
   BODY="$(call_tool "$t")"
   ok "$t" "$BODY"
@@ -156,6 +195,14 @@ for t in get_company_info get_service_lines get_methodology get_products get_lat
     FAIL=$((FAIL+1))
   fi
 done
+
+printf '[4/4] 写入参数拒绝\n'
+BODY="$(call_tool_args submit_lead '{"name":"Contract Smoke Test"}')"
+assert_rejected "submit_lead rejects missing phone/wechat" "$BODY"
+BODY="$(call_tool_args subscribe_reports '{"channel":"sms","address":"contract-smoke@example.com"}')"
+assert_rejected "subscribe_reports rejects invalid channel" "$BODY"
+BODY="$(call_tool_args unsubscribe_reports '{}')"
+assert_rejected "unsubscribe_reports rejects missing address" "$BODY"
 
 printf '\n结果：%s 通过，%s 失败\n' "$PASS" "$FAIL"
 [ "$FAIL" -eq 0 ]
