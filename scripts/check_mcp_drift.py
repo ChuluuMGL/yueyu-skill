@@ -21,6 +21,7 @@ import json
 import os
 import re
 import sys
+import time
 import urllib.request
 
 MCP_URL = os.environ.get("MCP_URL", "https://www.yueyu.tech/mcp")
@@ -66,19 +67,26 @@ def read(path):
 
 def rpc(method, params=None, rid=1):
     payload = {"jsonrpc": "2.0", "id": rid, "method": method, "params": params or {}}
-    req = urllib.request.Request(
-        MCP_URL,
-        data=json.dumps(payload, ensure_ascii=False).encode(),
-        headers={
-            "Content-Type": "application/json",
-            "Accept": "application/json, text/event-stream",
-        },
-        method="POST",
-    )
-    with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
-        raw = r.read().decode("utf-8", "replace")
-    blob = "".join(line[5:].strip() for line in raw.splitlines() if line.strip().startswith("data:")) or raw
-    return json.loads(blob)
+    body = json.dumps(payload, ensure_ascii=False).encode()
+    headers = {
+        "Content-Type": "application/json",
+        "Accept": "application/json, text/event-stream",
+    }
+    last_exc = None
+    for _ in range(3):
+        try:
+            req = urllib.request.Request(MCP_URL, data=body, headers=headers, method="POST")
+            with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
+                raw = r.read().decode("utf-8", "replace")
+            blob = "".join(line[5:].strip() for line in raw.splitlines() if line.strip().startswith("data:")) or raw
+            if blob.strip():
+                return json.loads(blob)
+        except Exception as exc:
+            last_exc = exc
+        time.sleep(1)
+    if last_exc:
+        raise last_exc
+    raise RuntimeError("empty MCP response after 3 attempts")
 
 
 def server_tools():

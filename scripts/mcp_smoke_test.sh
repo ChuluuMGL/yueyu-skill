@@ -17,10 +17,16 @@ PASS=0; FAIL=0; ID=0
 HEADERS="$(mktemp)"; LIST_FILE="$(mktemp)"
 trap 'rm -f "$HEADERS" "$LIST_FILE"' EXIT
 
-raw () {  # raw <body> —— 直接 POST 一个完整 body 字符串
-  curl -s -m 20 -X POST "$ENDPOINT" \
-    -H "Content-Type: application/json" -H "Accept: application/json, text/event-stream" \
-    --data-raw "$1"
+raw () {  # raw <body> —— POST 一个完整 body 字符串；线上偶发空响应时重试最多 3 次，避免假失败
+  local body="$1" resp i
+  for i in 1 2 3; do
+    resp="$(curl -s -m 20 -X POST "$ENDPOINT" \
+      -H "Content-Type: application/json" -H "Accept: application/json, text/event-stream" \
+      --data-raw "$body")"
+    [ -n "$resp" ] && { printf '%s' "$resp"; return 0; }
+    sleep 1
+  done
+  printf '%s' "$resp"
 }
 
 ok () {  # ok <label> <body> —— 兼容 JSON 与 SSE（data: 行里同样含 "result"）
@@ -67,11 +73,15 @@ PY
 
 printf 'Endpoint: %s\n' "$ENDPOINT"
 
-# 1) initialize（-D 抓 Mcp-Session-Id）
+# 1) initialize（-D 抓 Mcp-Session-Id；空响应重试）
 printf '[1/3] initialize\n'
-INIT=$(curl -s -m 20 -D "$HEADERS" -X POST "$ENDPOINT" \
-  -H "Content-Type: application/json" -H "Accept: application/json, text/event-stream" \
-  --data-raw '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"smoke","version":"0.0.1"}}}')
+for _ in 1 2 3; do
+  INIT="$(curl -s -m 20 -D "$HEADERS" -X POST "$ENDPOINT" \
+    -H "Content-Type: application/json" -H "Accept: application/json, text/event-stream" \
+    --data-raw '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"smoke","version":"0.0.1"}}}')"
+  [ -n "$INIT" ] && break
+  sleep 1
+done
 ID=1
 ok "initialize" "$INIT"
 SESSION="$(grep -i '^mcp-session-id:' "$HEADERS" | tail -1 | tr -d '\r' | awk '{print $2}')"
