@@ -14,6 +14,14 @@ yueyu-skill 版本演进。日期为首个发布该版本的提交日。
 - 新增 PR 模板、`SECURITY.md` 和 `docs/client-install.md`
 - 发布清单与贡献指南改为引用一键 QA，并补充品牌图更新规则
 
+### 隐私告知与提交确认
+- `SKILL.md` 新增常驻「写入类工具的前置校验」与「个人信息告知与确认」规则，覆盖 `submit_lead` / `subscribe_reports` / `unsubscribe_reports`：调用前必须说明接收方与用途（月瑀科技商务团队，用于联系合作 / 仅用于报告推送）、复述将提交的字段，并取得用户明确确认；参数齐全不再等同于用户同意
+- 最小化收集：只收姓名 + 一种联系方式；`company` / `note` 只写用户主动提供的内容；不编造、不预填联系方式；代他人提交须先确认对方知情同意并在 `note` 注明
+- `subscribe_reports` 确认话术说明推送内容，以及可随时通过 `unsubscribe_reports` 取消
+- `references/sales-consultation.md`「线索预筛」改为可选、仅限业务需求，并补充确认话术；`references/usage-examples.md` 的留资 / 订阅 / 退订 / 多工具编排示例改为「告知 → 复述 → 确认 → 调用」，新增用户拒绝与代他人提交示例
+- `agents/openai.yaml` 新增 `data_minimization` 护栏并强化 `privacy_notice`；`skill.json` 工具描述与 `brand_prompt`、中英文 README「数据与隐私」、`SECURITY.md`、PR 模板同步提交确认要求
+- 9 个 MCP 工具的名称与 inputSchema 无变化
+
 ## [0.2.6] — 2026-07-06
 
 ### QA 与发布体验

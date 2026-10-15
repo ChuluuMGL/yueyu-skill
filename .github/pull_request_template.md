@@ -14,5 +14,5 @@
 - [ ] Version surfaces are intentionally unchanged, or `skill.json`, `SKILL.md`, `README.md`, `README.en.md`, `agents/openai.yaml`, and issue-template placeholders are all bumped together.
 - [ ] README social preview still renders the approved YUEYU logo.
 - [ ] No fabricated client counts, case data, rankings, ROI, platform endorsement, or performance guarantees were added.
-- [ ] Write tools still require required contact fields and include privacy notice guidance.
+- [ ] Write tools still require required contact fields and include privacy notice + explicit user confirmation guidance.
 - [ ] If live MCP behavior changed, the website backend was deployed and `serverInfo.version` was checked.

@@ -98,6 +98,8 @@ Use $yueyu-skill to explain the 4I marketing growth wheel and how it applies to 
 My name is Alex. My WeChat is alex-demo. I want to discuss Xiaohongshu influencer placement. Use $yueyu-skill to submit my request to the business team.
 ```
 
+> Before submitting, the assistant reads back the name / contact / note, explains that the info goes only to YUEYU TECH's business team for cooperation follow-up, and calls `submit_lead` only after you confirm.
+
 ---
 
 ## Why YUEYU
@@ -130,7 +132,7 @@ This Skill uses a remote MCP endpoint. For write tools:
 - `unsubscribe_reports`: cancels report notifications for the provided address.
 - Query tools do not require personal information.
 
-Before collecting contact details, the assistant must tell the user that the information is submitted only to YUEYU TECH's business team for cooperation follow-up.
+Before collecting contact details, the assistant must tell the user that the information is submitted only to YUEYU TECH's business team for cooperation follow-up. Before calling any write tool it reads back what will be sent and submits only after the user's explicit confirmation; it never invents or auto-fills contact details. For subscriptions it states what will be sent and that the user can cancel anytime via `unsubscribe_reports`.
 
 ---
 

@@ -5,7 +5,7 @@
 version: 0.2.6
 display_name: "月瑀科技营销服务查询"
 short_description: "实时查询月瑀科技的小红书代运营、达人投放、信息流广告、线索转化和营销复盘服务，支持提交合作线索（MCP）。"
-default_prompt: "Use $yueyu-skill to answer questions about 月瑀科技 / YUEYU TECH: company info, service lines, methodology, AI tools, latest reports, and contact details. For partnership intent, collect name plus phone or wechat before calling submit_lead."
+default_prompt: "Use $yueyu-skill to answer questions about 月瑀科技 / YUEYU TECH: company info, service lines, methodology, AI tools, latest reports, and contact details. For partnership intent, collect name plus one contact method (phone or wechat) provided by the user, tell them the info goes only to YUEYU TECH's business team for cooperation follow-up, read back the fields, and call submit_lead only after explicit confirmation."
 
 mcp:
   transport: streamable-http
@@ -38,10 +38,10 @@ tools:
     description: 商务联系方式（电话、邮箱、微信说明、地址、工作时间）。无参数。
   - name: submit_lead
     type: write
-    description: 提交合作线索到商务团队（飞书 + CRM）。需 name + 至少一种联系方式（phone 或 wechat）；提交前必须告知仅用于商务联系。
+    description: 提交合作线索到商务团队（飞书 + CRM）。需 name + 至少一种联系方式（phone 或 wechat）；提交前必须告知仅用于商务联系，并取得用户明确确认。
   - name: subscribe_reports
     type: write
-    description: 订阅行业报告与学习资料推送。需 channel（email/wechat/webhook）+ address。
+    description: 订阅行业报告与学习资料推送。需 channel（email/wechat/webhook）+ address；订阅前说明推送内容与退订方式，并取得用户确认。
   - name: unsubscribe_reports
     type: write
     description: 取消订阅报告推送。需 address。
@@ -49,5 +49,6 @@ tools:
 guardrails:
   no_fabrication: 回答具体服务、案例、报价、合同、效果承诺前必须先调用对应工具；没有公开核验的信息就说明不知道。
   write_validation: 调用写入类工具前必须校验必填参数，缺失则先向用户追问。
-  privacy_notice: 收集姓名、电话、微信等联系方式前，说明信息仅提交给月瑀科技商务团队用于联系合作。
+  privacy_notice: 收集姓名、电话、微信、邮箱或 Webhook 地址前，说明信息仅提交给月瑀科技商务团队用于联系合作（订阅地址仅用于报告推送，可通过 unsubscribe_reports 取消）；复述将提交的字段，取得用户明确确认后才调用写入类工具。
+  data_minimization: 只收集姓名 + 一种联系方式（订阅只需渠道 + 地址）；note 只写用户主动提供的咨询内容；不编造、不预填联系方式；代他人提交须先确认对方知情同意并在 note 中注明。
   fallback: MCP 超时（>5s）时可用 SKILL.md 静态数据降级回复；仍不得编造未核验事实。
