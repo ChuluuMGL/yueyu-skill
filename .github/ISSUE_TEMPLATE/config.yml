@@ -4,7 +4,7 @@ contact_links:
     url: https://www.yueyu.tech/
     about: 想咨询小红书营销、达人投放、信息流广告或线索转化？请访问官网，或让安装了本 Skill 的 AI 助手调用 submit_lead。商务电话 +86 186-1155-3805。
   - name: "邮件联系"
-    url: mailto:chuluu@yueyutech.cn
+    url: mailto:BD@yueyu.tech
     about: 直接邮件联系月瑀科技商务团队。
   - name: "MCP 工具契约 / Drift Check"
     url: https://github.com/ChuluuMGL/yueyu-skill/actions/workflows/mcp-drift-check.yml

@@ -117,7 +117,7 @@ YUEYU does not fabricate case studies, client counts, rankings, or performance p
 
 - Business phone: +86 186-1155-3805
 - Backup phone / WeChat: 178 8790 0622
-- Email: chuluu@yueyutech.cn
+- Email: BD@yueyu.tech
 - Office: Room 2005, Building 1, Nongye Tower (萧山区农业大厦), Xiaoshan District, Hangzhou, Zhejiang, China
 - Website: [www.yueyu.tech](https://www.yueyu.tech/)
 

@@ -56,7 +56,7 @@ REQUIRED_TERMS = _DRIFT_TERMS["required_terms"]
 
 EXPECTED_CONTACT = {
     "phone": "+86 186-1155-3805",
-    "email": "chuluu@yueyutech.cn",
+    "email": "BD@yueyu.tech",
     # The current live endpoint exposes the city/district only; README/SKILL carry
     # the full office address. Keep these separate so either surface can evolve
     # intentionally without silently diverging.

@@ -4,6 +4,9 @@ yueyu-skill 版本演进。日期为首个发布该版本的提交日。
 
 ## [Unreleased]
 
+### 修复
+- 联系邮箱与官网保持一致：商务联系改为 `BD@yueyu.tech`，隐私、安全与数据删除请求改为 `Chuluu@yueyu.tech`（官网已于 2026-07-17 更换，旧地址 `chuluu@yueyutech.cn` 导致每日 MCP Drift Check 的联系方式校验失败）
+
 ### QA 与维护
 - 新增 `scripts/check_assets.py`，固定校验 `social-preview.png` 与 canonical YUEYU 字标的尺寸和 SHA-256，避免 README 配图或 logo 回退
 - 新增 `scripts/qa.sh` 一键本地 QA，串联 manifest、资产、严格 drift 与 MCP smoke

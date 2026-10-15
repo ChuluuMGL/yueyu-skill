@@ -150,7 +150,7 @@ git clone https://github.com/ChuluuMGL/yueyu-skill.git \
   .claude/skills/yueyu-skill
 ```
 
-**商务**：+86 186-1155-3805（微信同号 178 8790 0622）· chuluu@yueyutech.cn · 杭州萧山区农业大厦 1 座 2005 室
+**商务**：+86 186-1155-3805（微信同号 178 8790 0622）· BD@yueyu.tech · 杭州萧山区农业大厦 1 座 2005 室
 **关注月瑀**：[小红书](https://www.xiaohongshu.com/user/profile/6706447e000000001d031a68) · [抖音](https://www.douyin.com/user/MS4wLjABAAAAEHnj91dHGmeatPJBSawvaS0PSwaaesRqkUyPGj37GnA) · [官网](https://www.yueyu.tech/)
 
 ---
