@@ -2,7 +2,7 @@
 # yueyu-skill 清单静态自检（不联网、无副作用）
 # 校验：1) skill.json / SKILL.md / README 徽章与表格 版本号一致；
 #       2) 每个工具具备 name/description/inputSchema 及 4 个 MCP 注解，且工具名不重复；
-#       3) 写入类关键合同（submit_lead / subscribe_reports）保持机器可读；
+#       3) 不得再声明已关闭的写入工具（submit_lead / subscribe_reports / unsubscribe_reports）；
 #       4) 可复制 MCP 配置示例与 skill.json 的远程端点一致。
 # 用法： bash scripts/check_manifest.sh
 # 退出码：0 通过；非 0 有失败。
@@ -81,22 +81,21 @@ else:
 
 print("工具数：%d" % len(names))
 
-# 3) 写入类关键合同
+# 3) 已关闭写入工具不得再出现在 skill.json
 by_name = {t.get("name"): t for t in tools if isinstance(t, dict)}
-submit = by_name.get("submit_lead") or {}
-submit_schema = submit.get("inputSchema") or {}
-if set(submit_schema.get("required") or []) != {"name"}:
-    errors.append("submit_lead：required 必须只包含 name")
-anyof = submit_schema.get("anyOf") or []
-anyof_sets = {tuple(sorted(item.get("required") or [])) for item in anyof if isinstance(item, dict)}
-if anyof_sets != {("phone",), ("wechat",)}:
-    errors.append("submit_lead：必须用 anyOf 要求 phone 或 wechat 至少一个")
-
-subscribe = by_name.get("subscribe_reports") or {}
-subscribe_schema = subscribe.get("inputSchema") or {}
-channel = ((subscribe_schema.get("properties") or {}).get("channel") or {})
-if set(channel.get("enum") or []) != {"email", "wechat", "webhook"}:
-    errors.append("subscribe_reports：channel enum 必须为 email / wechat / webhook")
+for closed in ("submit_lead", "subscribe_reports", "unsubscribe_reports"):
+    if closed in by_name:
+        errors.append("%s：已按设计关闭，不得再列入 skill.json.tools" % closed)
+expected = {
+    "get_company_info",
+    "get_service_lines",
+    "get_methodology",
+    "get_products",
+    "get_latest_reports",
+    "get_contact_info",
+}
+if set(names) != expected:
+    errors.append("tools 集合必须正好是 6 个只读工具，当前=%s" % sorted(names))
 
 m_agent = re.search(r"(?m)^version:\s*([^\s]+)", agent_meta)
 if agent_meta and (not m_agent or m_agent.group(1) != v_json):

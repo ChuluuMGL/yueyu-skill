@@ -17,13 +17,11 @@ Include:
 
 This skill exposes write tools that may collect contact details for business follow-up:
 
-- `submit_lead`: name plus phone or WeChat, with optional company and notes
-- `subscribe_reports`: email, WeChat, or webhook URL
-- `unsubscribe_reports`: subscription address
+- Legacy write tools (`submit_lead` / `subscribe_reports` / `unsubscribe_reports`) are closed. This skill no longer collects contact data for remote MCP writes.
 
 Agents must tell users before collecting contact details that the information is submitted only to YUEYU TECH's business team for cooperation follow-up or report notifications, read back the fields to be sent, and call a write tool only after the user's explicit confirmation. Agents collect only the name plus one contact method (or channel plus address for subscriptions), never fabricate or prefill contact details, and do not submit a third party's details without confirming that person's consent.
 
-For deletion, correction, or unsubscribe requests, contact Chuluu@yueyu.tech or use `unsubscribe_reports` where applicable.
+For deletion, correction, or unsubscribe requests, contact Chuluu@yueyu.tech.
 
 ## Scope
 

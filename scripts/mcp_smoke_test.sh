@@ -203,13 +203,11 @@ for t in get_company_info get_service_lines get_methodology get_products get_lat
   fi
 done
 
-printf '[4/4] 写入参数拒绝\n'
-BODY="$(call_tool_args submit_lead '{"name":"Contract Smoke Test"}')"
-assert_rejected "submit_lead rejects missing phone/wechat" "$BODY"
-BODY="$(call_tool_args subscribe_reports '{"channel":"sms","address":"contract-smoke@example.com"}')"
-assert_rejected "subscribe_reports rejects invalid channel" "$BODY"
-BODY="$(call_tool_args unsubscribe_reports '{}')"
-assert_rejected "unsubscribe_reports rejects missing address" "$BODY"
+printf '[4/4] 写入接口保持关闭\n'
+for t in submit_lead subscribe_reports unsubscribe_reports; do
+  BODY="$(call_tool_args "$t" '{}')"
+  assert_rejected "$t remains closed" "$BODY"
+done
 
 printf '\n结果：%s 通过，%s 失败\n' "$PASS" "$FAIL"
 [ "$FAIL" -eq 0 ]

@@ -9,14 +9,14 @@
 
 [![AI Skill](https://img.shields.io/badge/AI%20Skill-yueyu--skill-0E5E43)](https://github.com/ChuluuMGL/yueyu-skill)
 [![MCP](https://img.shields.io/badge/Protocol-MCP-blue)](https://modelcontextprotocol.io/)
-[![Version](https://img.shields.io/badge/version-0.2.6-green)](https://github.com/ChuluuMGL/yueyu-skill/releases)
+[![Version](https://img.shields.io/badge/version-0.2.7-green)](https://github.com/ChuluuMGL/yueyu-skill/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow)](https://opensource.org/licenses/MIT)
 [![Endpoint](https://img.shields.io/website?url=https%3A%2F%2Fwww.yueyu.tech%2Fmcp&label=MCP%20Endpoint)](https://www.yueyu.tech/mcp)
 [![Drift Check](https://github.com/ChuluuMGL/yueyu-skill/actions/workflows/mcp-drift-check.yml/badge.svg)](https://github.com/ChuluuMGL/yueyu-skill/actions/workflows/mcp-drift-check.yml)
 
 ---
 
-> Current stable version: `v0.2.6` (GitHub Release). The `main` branch tracks the latest validated package; each version bump should be tagged and released so source and install pages stay aligned.
+> Current stable version: `v0.2.7` (GitHub Release). The `main` branch tracks the latest validated package; each version bump should be tagged and released so source and install pages stay aligned.
 
 ## What This Skill Does
 
@@ -98,7 +98,7 @@ Use $yueyu-skill to explain the 4I marketing growth wheel and how it applies to 
 My name is Alex. My WeChat is alex-demo. I want to discuss Xiaohongshu influencer placement. Use $yueyu-skill to submit my request to the business team.
 ```
 
-> Before submitting, the assistant reads back the name / contact / note, explains that the info goes only to YUEYU TECH's business team for cooperation follow-up, and calls `submit_lead` only after you confirm.
+> This MCP surface is read-only. For partnership intent the assistant calls `get_contact_info` and directs you to https://www.yueyu.tech/ or the published phone/email instead of remote lead capture.
 
 ---
 
@@ -127,12 +127,10 @@ YUEYU does not fabricate case studies, client counts, rankings, or performance p
 
 This Skill uses a remote MCP endpoint. For write tools:
 
-- `submit_lead`: name, phone/WeChat, company, and notes are sent to YUEYU's business team via Feishu + CRM and used only for business follow-up.
-- `subscribe_reports`: email, WeChat, or Webhook URL is used only for new-report notifications.
-- `unsubscribe_reports`: cancels report notifications for the provided address.
+- Legacy write tools `submit_lead` / `subscribe_reports` / `unsubscribe_reports` are closed by design. The assistant must not call them.
 - Query tools do not require personal information.
 
-Before collecting contact details, the assistant must tell the user that the information is submitted only to YUEYU TECH's business team for cooperation follow-up. Before calling any write tool it reads back what will be sent and submits only after the user's explicit confirmation; it never invents or auto-fills contact details. For subscriptions it states what will be sent and that the user can cancel anytime via `unsubscribe_reports`.
+For partnership or subscription intent, provide public contact details from `get_contact_info` and point users to the website consultant flow. Do not collect personal data for remote MCP writes.
 
 ---
 
@@ -143,7 +141,7 @@ Before collecting contact details, the assistant must tell the user that the inf
 | Protocol | MCP (Model Context Protocol) |
 | Transport | Streamable HTTP |
 | Endpoint | `POST https://www.yueyu.tech/mcp` |
-| Version | 0.2.6 |
+| Version | 0.2.7 |
 | Tools | 9 |
 | Contract check | [drift-check CI](https://github.com/ChuluuMGL/yueyu-skill/actions/workflows/mcp-drift-check.yml): tools, schemas, annotations, canonical payload terms, contact facts, safe write-tool smoke tests, and versions |
 

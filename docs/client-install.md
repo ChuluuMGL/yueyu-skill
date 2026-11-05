@@ -26,7 +26,7 @@ Use yueyu-skill to introduce YUEYU TECH and its Xiaohongshu marketing services.
 
 ## Option B: MCP Server Only
 
-Use this when the client supports MCP but not local skill packages, or when you only need the live tools.
+Use this when the client supports MCP but not local skill packages, or when you only need the live tools (read-only).
 
 ```json
 {
@@ -57,9 +57,6 @@ Expected tools:
 - `get_products`
 - `get_latest_reports`
 - `get_contact_info`
-- `submit_lead`
-- `subscribe_reports`
-- `unsubscribe_reports`
 
 If the client can call tools, ask:
 
