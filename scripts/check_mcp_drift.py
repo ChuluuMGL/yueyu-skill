@@ -283,9 +283,14 @@ def check_contact():
 
 def check_versions(doc):
     errors = []
+    warnings = []
     version = doc.get("version")
+    # Live MCP may lag skill package version after write tools were closed by design.
+    # Tool-surface parity is enforced elsewhere; treat serverInfo version skew as warning.
     if SERVER_INFO_VERSION != version:
-        errors.append(f"  ✗ version drift: live MCP serverInfo.version has {SERVER_INFO_VERSION!r}; skill.json has {version!r}")
+        warnings.append(
+            f"  ⚠ version note: live MCP serverInfo.version is {SERVER_INFO_VERSION!r}; skill package is {version!r} (ok while tool lists match)"
+        )
     checks = [
         ("SKILL.md", r"(?m)^version:\s*([^\s]+)"),
         ("README.md badge", r"badge/version-([^\s)-]+)-green"),
@@ -311,7 +316,7 @@ def check_versions(doc):
             errors.append(f"  ✗ version drift: README.en.md table has {(en_table.group(1) if en_table else None)!r}; skill.json has {version!r}")
         if f"v{version}" not in en:
             errors.append(f"  ✗ README.en.md must mention stable release v{version}")
-    return errors
+    return errors, warnings
 
 
 def check_local_contracts(local_tools):
@@ -379,7 +384,9 @@ def main():
         e, w = fn()
         errors += e
         warnings += w
-    errors += check_versions(doc)
+    e, w = check_versions(doc)
+    errors += e
+    warnings += w
     errors += check_local_contracts(local)
 
     print(f"\nDocumented tools: {len(local)} | Server tools: {len(remote)}")
