@@ -10,10 +10,8 @@ Hard-fails when:
     enterprise record number, the 5 service-line names, product names) — i.e.
     the server must return correct content, not merely non-banned content;
   - canonical contact strings drift between README/SKILL docs and live MCP data;
-  - local package contracts regress, especially submit_lead requiring
-    name plus phone-or-wechat;
-  - safe smoke tests show write handlers accepting incomplete leads, invalid
-    subscription channels, or missing unsubscribe addresses;
+  - legacy write tools (submit_lead / subscribe_reports / unsubscribe_reports)
+    reappear in tools/list, or stop returning the designed closed/forbidden status;
   - version strings drift across skill.json / SKILL.md / README / agents/openai.yaml
     or the live MCP serverInfo.version.
 
@@ -41,6 +39,12 @@ READ_ONLY_TOOLS = [
     "get_products",
     "get_latest_reports",
     "get_contact_info",
+]
+
+LEGACY_WRITE_TOOLS = [
+    "submit_lead",
+    "subscribe_reports",
+    "unsubscribe_reports",
 ]
 
 # Drift vocabulary lives in scripts/drift_terms.json so this Python checker and
@@ -72,6 +76,13 @@ def read(path):
         return f.read()
 
 
+def _decode_rpc_body(raw):
+    blob = "".join(line[5:].strip() for line in raw.splitlines() if line.strip().startswith("data:")) or raw
+    if not blob.strip():
+        raise RuntimeError("empty MCP response body")
+    return json.loads(blob)
+
+
 def rpc(method, params=None, rid=1):
     payload = {"jsonrpc": "2.0", "id": rid, "method": method, "params": params or {}}
     body = json.dumps(payload, ensure_ascii=False).encode()
@@ -83,11 +94,19 @@ def rpc(method, params=None, rid=1):
     for attempt in range(5):
         try:
             req = urllib.request.Request(MCP_URL, data=body, headers=headers, method="POST")
-            with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
-                raw = r.read().decode("utf-8", "replace")
-            blob = "".join(line[5:].strip() for line in raw.splitlines() if line.strip().startswith("data:")) or raw
-            if blob.strip():
-                return json.loads(blob)
+            try:
+                with urllib.request.urlopen(req, timeout=TIMEOUT) as r:
+                    raw = r.read().decode("utf-8", "replace")
+                return _decode_rpc_body(raw)
+            except urllib.error.HTTPError as exc:
+                # Closed write tools return HTTP 403 with a JSON-RPC error body.
+                raw = exc.read().decode("utf-8", "replace")
+                if raw.strip():
+                    try:
+                        return _decode_rpc_body(raw)
+                    except Exception:
+                        pass
+                raise
         except Exception as exc:
             last_exc = exc
         time.sleep(min(2 ** attempt, 8))
@@ -297,73 +316,52 @@ def check_versions(doc):
 
 def check_local_contracts(local_tools):
     errors = []
-    submit_schema = (local_tools.get("submit_lead") or {}).get("inputSchema") or {}
-    if set(submit_schema.get("required") or []) != {"name"}:
-        errors.append("  ✗ local contract: submit_lead must require name")
-    if required_sets(submit_schema.get("anyOf", [])) != {frozenset({"phone"}), frozenset({"wechat"})}:
-        errors.append("  ✗ local contract: submit_lead must require phone or wechat via anyOf")
-
-    subscribe_schema = (local_tools.get("subscribe_reports") or {}).get("inputSchema") or {}
-    channel = ((subscribe_schema.get("properties") or {}).get("channel") or {})
-    if set(channel.get("enum") or []) != {"email", "wechat", "webhook"}:
-        errors.append("  ✗ local contract: subscribe_reports channel enum must be email/wechat/webhook")
-
+    for name in LEGACY_WRITE_TOOLS:
+        if name in local_tools:
+            errors.append(f"  ✗ local contract: legacy write tool {name!r} must not remain in skill.json")
     agent = read("agents/openai.yaml")
     for name in local_tools:
         if f"- name: {name}" not in agent:
             errors.append(f"  ✗ agents/openai.yaml missing tool entry: {name}")
+    for name in LEGACY_WRITE_TOOLS:
+        # Allow mentioning closed tools only as forbidden names in prose; require explicit closed guidance.
+        if f"- name: {name}" in agent:
+            errors.append(f"  ✗ agents/openai.yaml must not list closed write tool: {name}")
+    if "readonly_only" not in agent and "read-only" not in agent.lower():
+        errors.append("  ✗ agents/openai.yaml should document the read-only / closed-write policy")
     return errors
 
 
-def check_safe_smoke_tests():
+def check_legacy_writes_closed(remote_tools):
+    """Legacy write tools must stay closed: absent from tools/list, and calls forbidden."""
     errors, warnings = [], []
-    tests = [
-        ("submit_lead rejects missing phone/wechat", "submit_lead", {"name": "Contract Smoke Test"}),
-        ("subscribe_reports rejects invalid channel", "subscribe_reports", {"channel": "sms", "address": "contract-smoke@example.com"}),
-        ("unsubscribe_reports rejects missing address", "unsubscribe_reports", {}),
-    ]
-    for idx, (label, tool_name, args) in enumerate(tests, start=701):
-        try:
-            payload = validation_payload(tool_name, args, idx)
-        except Exception as exc:
-            warnings.append(f"  ⚠ smoke skipped: {label} ({exc})")
+    for name in LEGACY_WRITE_TOOLS:
+        if name in remote_tools:
+            errors.append(f"  ✗ '{name}' reappeared in tools/list; keep legacy writes closed")
+    for idx, name in enumerate(LEGACY_WRITE_TOOLS, start=701):
+        data = rpc("tools/call", {"name": name, "arguments": {}}, idx)
+        if "error" not in data:
+            errors.append(f"  ✗ '{name}' call unexpectedly succeeded while legacy writes are closed")
             continue
-        if payload.get("success") is not False:
-            errors.append(f"  ✗ smoke: {label}; payload={json.dumps(payload, ensure_ascii=False)[:240]}")
-    return errors, warnings
-
-
-def check_dry_run_accepted():
-    """Write handlers must ACCEPT valid args when dry_run:true (no real write).
-
-    The backend signals a no-op validation pass with validated/ok/dry_run == true.
-    Catches a regression where dry_run is silently ignored and a real write happens,
-    or where valid args start being rejected.
-    """
-    errors, warnings = [], []
-    tests = [
-        ("submit_lead accepts valid dry_run", "submit_lead",
-         {"name": "Contract Smoke Test", "phone": "0000000000", "dry_run": True}),
-        ("subscribe_reports accepts valid dry_run", "subscribe_reports",
-         {"channel": "email", "address": "contract-smoke@example.com", "dry_run": True}),
-        ("unsubscribe_reports accepts valid dry_run", "unsubscribe_reports",
-         {"address": "contract-smoke@example.com", "dry_run": True}),
-    ]
-    for idx, (label, tool_name, args) in enumerate(tests, start=801):
-        try:
-            payload = validation_payload(tool_name, args, idx)
-        except Exception as exc:
-            warnings.append(f"  ⚠ dry_run skipped: {label} ({exc})")
-            continue
-        if payload.get("jsonrpc_error"):
-            errors.append(f"  ✗ dry_run: {label}; server rejected valid dry_run: {payload['jsonrpc_error']}")
-            continue
-        if not (payload.get("validated") is True or payload.get("ok") is True or payload.get("dry_run") is True):
-            errors.append(f"  ✗ dry_run: {label}; expected validated/ok/dry_run true, got {json.dumps(payload, ensure_ascii=False)[:240]}")
+        err = data["error"] or {}
+        message = str(err.get("message") or err)
+        code = err.get("code")
+        # Designed closure returns JSON-RPC error -32003 / Forbidden-style message.
+        closed_ok = (
+            code in (-32003, -32601, -32000)
+            or "disabled" in message.lower()
+            or "forbidden" in message.lower()
+            or "not found" in message.lower()
+            or "unknown" in message.lower()
+            or "关闭" in message
+        )
+        if not closed_ok:
+            errors.append(f"  ✗ '{name}' closed-check unexpected error: {err}")
     return errors, warnings
 
 
 def main():
+
     print(f"Comparing {SKILL_JSON} against {MCP_URL} ...")
     try:
         remote = server_tools()
@@ -376,8 +374,7 @@ def main():
         lambda: check_schema(local, remote),
         check_payloads,
         check_contact,
-        check_safe_smoke_tests,
-        check_dry_run_accepted,
+        lambda: check_legacy_writes_closed(remote),
     ):
         e, w = fn()
         errors += e
@@ -392,9 +389,9 @@ def main():
         print("\nDRIFT DETECTED:")
         for error in errors:
             print(error)
-        print("\nFix: update skill.json/SKILL.md/README/agents metadata or deploy the website MCP backend to match.")
+        print("\nFix: update skill.json/SKILL.md/README/agents metadata to the current read-only MCP surface (do not reopen legacy write tools).")
         sys.exit(1)
-    print("\n✓ No blocking drift — tools, schemas, annotations, payload guardrails, contact facts, safe smoke tests, versions, and local contracts are consistent.")
+    print("\n✓ No blocking drift — tools, schemas, annotations, payload guardrails, contact facts, closed-write checks, versions, and local contracts are consistent.")
     if warnings:
         print(f"  ({len(warnings)} non-fatal warning(s) listed above)")
 

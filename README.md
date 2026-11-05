@@ -1,7 +1,7 @@
 # 月瑀科技 AI Skill
 
 > **把月瑀科技的小红书代运营服务，装进你的 AI 助手。**
-> 一个开源 MCP Skill —— 接入 Claude / Cursor / 任意 MCP 客户端后，你的 AI 就能实时了解月瑀的服务、方法论，并直接帮你提交合作线索。
+> 一个开源 MCP Skill —— 接入 Claude / Cursor / 任意 MCP 客户端后，你的 AI 就能实时了解月瑀的服务、方法论与公开联系方式（当前为只读查询）。
 > *Put YUEYU TECH's Xiaohongshu marketing services into your AI assistant — a live MCP skill.*
 
 ![月瑀科技 AI Skill](social-preview.png?v=20260706-yueyu-logo)
@@ -10,7 +10,7 @@
 
 [![AI Skill](https://img.shields.io/badge/AI%20Skill-yueyu--skill-0E5E43)](https://github.com/ChuluuMGL/yueyu-skill)
 [![MCP](https://img.shields.io/badge/Protocol-MCP-blue)](https://modelcontextprotocol.io/)
-[![Version](https://img.shields.io/badge/version-0.2.6-green)](https://github.com/ChuluuMGL/yueyu-skill/releases)
+[![Version](https://img.shields.io/badge/version-0.2.7-green)](https://github.com/ChuluuMGL/yueyu-skill/releases)
 [![License: MIT](https://img.shields.io/badge/license-MIT-yellow)](https://opensource.org/licenses/MIT)
 [![Endpoint](https://img.shields.io/website?url=https%3A%2F%2Fwww.yueyu.tech%2Fmcp&label=MCP%20Endpoint)](https://www.yueyu.tech/mcp)
 [![Drift Check](https://github.com/ChuluuMGL/yueyu-skill/actions/workflows/mcp-drift-check.yml/badge.svg)](https://github.com/ChuluuMGL/yueyu-skill/actions/workflows/mcp-drift-check.yml)
@@ -19,7 +19,7 @@
 
 ---
 
-> 当前稳定版：`v0.2.6`（GitHub Release）。`main` 分支保持为最新已校验代码；每次版本号更新后同步打 tag/release，避免安装页与源码版本脱节。
+> 当前稳定版：`v0.2.7`（GitHub Release）。`main` 分支保持为最新已校验代码；每次版本号更新后同步打 tag/release，避免安装页与源码版本脱节。
 
 ## 装上能干嘛
 
@@ -30,12 +30,12 @@
 - 🧭 「4I 营销飞轮是什么？」—— 品牌方法论
 - 🤖 「你们有什么 AI 工具？」—— 品牌棱镜 / MuseWrite / REDFabric
 - 📈 「最新的行业报告？」—— 趋势与学习资料
-- 📞 「我想合作，帮我留个信息」—— **直接把合作线索提交到商务团队**
+- 📞 「我想合作 / 怎么联系」—— **给出公开联系方式，并引导官网顾问入口**
 
 **适合谁装：**
 - 正在找小红书代运营 / 达人投放服务商的**品牌方**
 - 想快速了解月瑀服务边界与方法论的**市场负责人**
-- 想在 AI 工作流里直接查询、并提交合作线索的**任何人**
+- 想在 AI 工作流里直接查询月瑀公开服务信息的**任何人**
 
 ---
 
@@ -88,7 +88,7 @@
 我叫张三，微信 zhang-demo，想咨询小红书达人投放。用 yueyu-skill 把我的需求提交给商务团队。
 ```
 
-> 提交前，AI 助手会复述将提交的姓名 / 联系方式 / 备注，说明信息仅提交给月瑀科技商务团队用于联系合作，等你确认后再调用 `submit_lead`。
+> 当前 MCP 为只读。用户想合作时，助手应调用 `get_contact_info`，并引导其通过官网顾问入口或公开电话/邮箱自行联系，不再远程提交线索。
 
 ---
 
@@ -102,9 +102,8 @@
 | 工具与资料 | 「有什么 AI 工具？」「BrandLens？」 | 查询 |
 | 行业报告 | 「最新行业趋势？」 | 查询 |
 | 联系方式 | 「怎么联系你们？」 | 查询 |
-| **提交合作线索** | 「帮我留个信息」 | 写入 |
-| **订阅报告** | 「有新报告通知我」 | 写入 |
-| **取消订阅** | 「不要推了」 | 写入 |
+| **联系方式（只读）** | 「帮我留个信息 / 想合作」 | 查询 → 引导官网 |
+| **最新报告（只读）** | 「有新报告通知我」 | 查询 → 引导官网 |
 
 ---
 
@@ -134,8 +133,8 @@
 ## 接入与联系
 
 > **两种路径，能力不同：**
-> - **方式 A = 安装 Skill 包**：AI 助手获得 9 个工具 + 月瑀品牌调性、盲区红线、隐私告知和降级策略。
-> - **方式 B = 仅连接 MCP server**：AI 助手只获得 9 个查询/写入工具，适合只想接数据接口的场景。
+> - **方式 A = 安装 Skill 包**：AI 助手获得 6 个只读工具 + 月瑀品牌调性、盲区红线与降级策略。
+> - **方式 B = 仅连接 MCP server**：AI 助手只获得 6 个只读查询工具，适合只想接数据接口的场景。
 
 | 你的客户端 | 接入方式 |
 |---|---|
@@ -157,11 +156,9 @@ git clone https://github.com/ChuluuMGL/yueyu-skill.git \
 
 ## 数据与隐私
 
-本 Skill 通过远程 MCP 端点提供实时数据。使用写入类工具时请注意：
+本 Skill 通过远程 MCP 端点提供实时只读数据。请注意：
 
-- **提交前确认**：AI 助手在调用写入类工具前，会先说明信息的接收方与用途、复述将提交的内容，并在你明确确认后才提交；不会编造或自动填入你的联系方式。
-- **提交合作线索（`submit_lead`）**：姓名、电话/微信、公司、需求备注会提交给月瑀科技商务团队（飞书 + CRM），仅用于商务跟进联系。
-- **订阅报告（`subscribe_reports`）**：邮箱、微信号或 Webhook URL 仅用于推送新报告通知，可随时通过 `unsubscribe_reports` 取消。
+- **合作 / 留资 / 订阅**：线上已关闭 `submit_lead` / `subscribe_reports` / `unsubscribe_reports`。助手只提供公开联系方式或引导官网顾问入口，不代为远程写入。
 - **查询类工具**：公司介绍、服务、方法论、报告、联系方式查询不需要用户个人信息。
 
 ---
@@ -174,7 +171,7 @@ git clone https://github.com/ChuluuMGL/yueyu-skill.git \
 
 **AI 会乱编案例和数据吗？** 不会。月瑀明确禁止编造案例、客户数量、效果承诺；未经公开核验的信息会如实说明，或引导联系商务。
 
-**怎么联系 / 合作？** 直接让 AI 帮你提交合作线索（留姓名 + 手机/微信），或拨打 +86 186-1155-3805。
+**怎么联系 / 合作？** 让 AI 调用 `get_contact_info` 给出公开联系方式，或自行拨打 +86 186-1155-3805 / 访问 https://www.yueyu.tech/ 。
 
 **服务怎么收费？** 咨询式报价，按行业、范围、周期定制。联系商务获取针对性报价。
 
@@ -189,8 +186,8 @@ git clone https://github.com/ChuluuMGL/yueyu-skill.git \
 | 端点 | `POST https://www.yueyu.tech/mcp` |
 | 部署 | 阿里云 ECS（杭州） |
 | 后端 | Express.js（复用官网 API） |
-| 版本 | 0.2.6 |
-| 契约校验 | [drift-check CI](https://github.com/ChuluuMGL/yueyu-skill/actions/workflows/mcp-drift-check.yml)：工具名/schema/annotations、payload 关键事实、联系方式、写入类负向 smoke、版本一致性 |
+| 版本 | 0.2.7 |
+| 契约校验 | [drift-check CI](https://github.com/ChuluuMGL/yueyu-skill/actions/workflows/mcp-drift-check.yml)：工具名/schema/annotations、payload 关键事实、联系方式、写入接口保持关闭检查、版本一致性 |
 
 ## 目录结构
 

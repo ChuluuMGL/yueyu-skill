@@ -4,6 +4,18 @@ yueyu-skill 版本演进。日期为首个发布该版本的提交日。
 
 ## [Unreleased]
 
+> 见下方 [0.2.7] 发布说明。
+
+## [0.2.7] — 2026-11-05
+
+### Changed
+- 与线上 MCP 对齐为**只读 6 工具**：保留 `get_company_info` / `get_service_lines` / `get_methodology` / `get_products` / `get_latest_reports` / `get_contact_info`
+- 从 `skill.json` / `SKILL.md` / `agents/openai.yaml` / README / SECURITY / usage-examples 移除已关闭的 `submit_lead` / `subscribe_reports` / `unsubscribe_reports` 可用声明
+- 合作 / 留资 / 订阅意图改为：调用 `get_contact_info` + 引导官网顾问入口；**不重新打开**写入接口
+- `scripts/check_mcp_drift.py` / `check_manifest.sh` / `mcp_smoke_test.sh`：检查规则改为“写入工具必须保持关闭”，修复因官网按设计关闭写入导致的自动漂移检查失败
+
+
+
 ### 修复
 - 联系邮箱与官网保持一致：商务联系改为 `BD@yueyu.tech`，隐私、安全与数据删除请求改为 `Chuluu@yueyu.tech`（官网已于 2026-07-17 更换，旧地址 `chuluu@yueyutech.cn` 导致每日 MCP Drift Check 的联系方式校验失败）
 
